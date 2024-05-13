@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using ECommWeb.Core.src.Common;
 using ECommWeb.Business.src.DTO;
 using ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 
 
 namespace Server.Controller.src.Controller
@@ -23,9 +25,10 @@ namespace Server.Controller.src.Controller
             _httpContextAccessor = httpContextAccessor;
 
         }
+
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync([FromQuery] QueryOptions options)
+        public async Task<ActionResult<IEnumerable<UserReadDto>>> GetAllUsersAsync([FromQuery] QueryOptions options)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
@@ -38,37 +41,52 @@ namespace Server.Controller.src.Controller
             {
                 throw new InvalidOperationException("Invalid user claims.");
             }
-            return await _userService.GetAllUsersAsync(options);
+            var result = await _userService.GetAllUsersAsync(options);
+            return Ok(result);
         }
+
+
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<UserReadDto> GetUserByIdAsync([FromRoute] Guid id)
+        public async Task<ActionResult<UserReadDto>> GetUserByIdAsync([FromRoute] Guid id)
         {
             var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userClaims == null) throw new InvalidOperationException("Please login to use this facility!");
-            return await _userService.GetUserByIdAsync(id);
+            var results = await _userService.GetUserByIdAsync(id);
+            return Ok(results);
         }
+
+
         [Authorize]
         [HttpGet("profile")]
-        public async Task<UserReadDto> GetUserProfileAsync()
+        public async Task<ActionResult<UserReadDto>> GetUserProfileAsync()
         {
             var claims = HttpContext.User;
             var userId = Guid.Parse(claims.FindFirst(ClaimTypes.NameIdentifier).Value);
-            return await _userService.GetUserByIdAsync(userId);
+            var result = await _userService.GetUserByIdAsync(userId);
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<UserReadDto> CreateCustomerAsync([FromBody] UserCreateDto user)
+        public async Task<ActionResult<UserReadDto>> CreateCustomerAsync([FromBody] UserCreateDto user)
         {
-            return await _userService.CreateCustomerAsync(user);
+            var createdUser = await _userService.CreateCustomerAsync(user);
+            return CreatedAtAction("CreateCustomer", new { createdUser.Id }, createdUser);
         }
+
+
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<bool> DeleteUserByIdAsync([FromRoute] Guid id)
+        public async Task<ActionResult<bool>> DeleteUserByIdAsync([FromRoute] Guid id)
         {
             var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userClaims == null) throw new InvalidOperationException("Please login to use this facility!");
-            return await _userService.DeleteUserByIdAsync(id);
+
+            var existingUser = await _userService.GetUserByIdAsync(id);
+            if (existingUser == null) return NotFound("No such user with the id provided exists!");
+
+            var isDeleted = await _userService.DeleteUserByIdAsync(id);
+            return Ok(isDeleted);
         }
 
         [Authorize]
