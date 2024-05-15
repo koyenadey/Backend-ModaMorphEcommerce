@@ -8,6 +8,6 @@ public interface ICategoryService
     public Task<IEnumerable<CategoryReadDTO>> GetAllCategoriesAsync(QueryOptions options);
     public Task<CategoryReadDTO> GetCategoryById(Guid id);
     public Task<CategoryReadDTO> CreateCategory(CategoryCreateDTO category);
-    public Task<CategoryReadDTO> UpdateCategory(Guid id, CategoryUpdateDTO category);
+    public Task<CategoryReadDTO> UpdateACategory(Guid id, CategoryUpdateDTO category);
     public Task<bool> DeleteCategory(Guid id);
 }

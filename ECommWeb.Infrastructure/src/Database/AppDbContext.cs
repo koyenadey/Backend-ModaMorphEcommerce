@@ -10,7 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<Address> Addresses { get; set; } // table `Addresses` -> `addresses`
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
-    // public DbSet<Category> Categories { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
     // public DbSet<Order> Orders { get; set; } // table `Orders` -> `orders`
     //public DbSet<OrderProduct> OrderedProducts { get; set; } // table `Orders` -> `orders`

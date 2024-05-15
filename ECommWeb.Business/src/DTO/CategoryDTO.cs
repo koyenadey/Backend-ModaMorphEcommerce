@@ -14,16 +14,11 @@ public class CategoryCreateDTO
 {
     public string Name { get; set; }
     public string Image { get; set; }
+    public Guid? ParentId { get; set; }
 }
 
 public class CategoryUpdateDTO
 {
     public string Name { get; set; }
     public string Image { get; set; }
-    public Category UpdateCategory(Category oldCate)
-    {
-        oldCate.Name = Name;
-        oldCate.Image = Image;
-        return oldCate;
-    }
 }

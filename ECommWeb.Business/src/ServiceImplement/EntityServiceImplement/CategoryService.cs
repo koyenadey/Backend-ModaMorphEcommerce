@@ -19,15 +19,15 @@ namespace Server.Service.src.ServiceImplement.AuthServiceImplement
         }
         public async Task<IEnumerable<CategoryReadDTO>> GetAllCategoriesAsync(QueryOptions options)
         {
-            var r = await _categoryRepo.GetAllAsync(options);
-            return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryReadDTO>>(r);
+            var categories = await _categoryRepo.GetAllAsync(options);
+            return _mapper.Map<IEnumerable<CategoryReadDTO>>(categories);
         }
         public async Task<CategoryReadDTO> GetCategoryById(Guid id)
         {
             var result = await _categoryRepo.GetOneByIdAsync(id);
             if (result is not null)
             {
-                return _mapper.Map<Category, CategoryReadDTO>(result);
+                return _mapper.Map<CategoryReadDTO>(result);
             }
             else
             {
@@ -36,23 +36,26 @@ namespace Server.Service.src.ServiceImplement.AuthServiceImplement
         }
         public async Task<CategoryReadDTO> CreateCategory(CategoryCreateDTO category)
         {
-            var result = await _categoryRepo.CreateOneAsync(_mapper.Map<CategoryCreateDTO, Category>(category));
-            return _mapper.Map<Category, CategoryReadDTO>(result);
+            var categoryToBeCreated = _mapper.Map<Category>(category);
+            var result = await _categoryRepo.CreateOneAsync(categoryToBeCreated);
+            return _mapper.Map<CategoryReadDTO>(result);
         }
-        async Task<CategoryReadDTO> ICategoryService.UpdateCategory(Guid id, CategoryUpdateDTO category)
+        public async Task<CategoryReadDTO> UpdateACategory(Guid id, CategoryUpdateDTO category)
         {
             var foundItem = await _categoryRepo.GetOneByIdAsync(id);
             if (foundItem is not null)
             {
-                var result = await _categoryRepo.UpdateOneByIdAsync(_mapper.Map(category, foundItem));
-                return _mapper.Map<Category, CategoryReadDTO>(result);
+                foundItem.Name = category.Name ?? foundItem.Name;
+                foundItem.Image = category.Image ?? foundItem.Image;
+
+                var result = await _categoryRepo.UpdateOneByIdAsync(foundItem);
+                return _mapper.Map<CategoryReadDTO>(result);
             }
             else
             {
                 throw CustomException.NotFoundException("Id not found");
             }
         }
-
         async Task<bool> ICategoryService.DeleteCategory(Guid id)
         {
             var foundItem = await _categoryRepo.GetOneByIdAsync(id);
@@ -66,5 +69,6 @@ namespace Server.Service.src.ServiceImplement.AuthServiceImplement
                 return false;
             }
         }
+
     }
 }
