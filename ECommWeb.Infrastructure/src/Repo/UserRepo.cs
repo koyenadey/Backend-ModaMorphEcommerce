@@ -1,5 +1,3 @@
-
-
 using Microsoft.EntityFrameworkCore;
 using ECommWeb.Core.src.Common;
 using ECommWeb.Core.src.Entity;

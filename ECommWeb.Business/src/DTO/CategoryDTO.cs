@@ -4,13 +4,10 @@ namespace ECommWeb.Business.src.DTO;
 
 public class CategoryReadDTO : BaseEntity
 {
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public string Image { get; set; }
-    public void Transform(Category category)
-    {
-        category.Name = Name;
-        category.Image = Image;
-    }
+
 }
 
 public class CategoryCreateDTO

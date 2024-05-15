@@ -5,6 +5,7 @@ using ECommWeb.Business.src.ServiceAbstract.AuthServiceAbstract;
 using ECommWeb.Infrastructure.src;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace ECommWeb.Infrastructure.src.Database;
 
@@ -12,12 +13,37 @@ public class SeedingData
 {
     private static readonly IPasswordService _passwordService = new PasswordService();
     private static Random random = new Random();
-    private static Category category1 = new Category("Electronics", $"https://picsum.photos/200/?random={random.Next(10)}");
-    private static Category category2 = new Category("Clothing", $"https://picsum.photos/200/?random={random.Next(10)}");
-    private static Category category3 = new Category("Home and Furnitures", $"https://picsum.photos/200/?random={random.Next(10)}");
-    private static Category category4 = new Category("Books", $"https://picsum.photos/200/?random={random.Next(10)}");
-    private static Category category5 = new Category("Toys and Games", $"https://picsum.photos/200/?random={random.Next(10)}");
-    private static Category category6 = new Category("Sports", $"https://picsum.photos/200/?random={random.Next(10)}");
+    private static Category category1 = new()
+    {
+        Name = "Electronics",
+        Image = $"https://picsum.photos/200/?random={random.Next(10)}"
+    };
+    private static Category category2 = new()
+    {
+        Name = "Clothing",
+        Image = $"https://picsum.photos/200/?random={random.Next(10)}"
+    };
+
+    private static Category category3 = new()
+    {
+        Name = "Home and Furnitures",
+        Image = $"https://picsum.photos/200/?random={random.Next(10)}"
+    };
+    private static Category category4 = new()
+    {
+        Name = "Books",
+        Image = $"https://picsum.photos/200/?random={random.Next(10)}"
+    };
+    private static Category category5 = new()
+    {
+        Name = "Toys and Games",
+        Image = $"https://picsum.photos/200/?random={random.Next(10)}"
+    };
+    private static Category category6 = new()
+    {
+        Name = "Sports",
+        Image = $"https://picsum.photos/200/?random={random.Next(10)}"
+    };
 
     private static User _admin = new User
     {
@@ -59,14 +85,18 @@ public class SeedingData
         var products = new List<Product>();
         for (int i = 1; i <= count; i++)
         {
-            var product = new Product(
-                $"{category.Name} product {i}",
-                random.Next(1000),      // price
-                $"Description of {category.Name} product {i}",
-                random.Next(10),        // inventory
-                random.Next(1, 10) / 10M,               // weight
-                category.Id
-            );
+            var product = new Product()
+            {
+                Id = Guid.NewGuid(),
+                Name = $"{category.Name} product {i}",
+                Price = random.Next(1000),      // price
+                Description = $"Description of {category.Name} product {i}",
+                Inventory = random.Next(10),        // inventory
+                Weight = random.Next(1, 10) / 10.0,               // weight
+                CategoryId = category.Id,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
             products.Add(product);
         }
@@ -76,12 +106,12 @@ public class SeedingData
     public static List<Product> GetProducts()
     {
         var products = new List<Product>();
-        products.AddRange(GenerateProductsForCategory(category1, 20));
-        products.AddRange(GenerateProductsForCategory(category2, 20));
-        products.AddRange(GenerateProductsForCategory(category3, 20));
-        products.AddRange(GenerateProductsForCategory(category4, 20));
-        products.AddRange(GenerateProductsForCategory(category5, 20));
-        products.AddRange(GenerateProductsForCategory(category6, 20));
+        products.AddRange(GenerateProductsForCategory(category1, 3));
+        products.AddRange(GenerateProductsForCategory(category2, 3));
+        products.AddRange(GenerateProductsForCategory(category3, 3));
+        products.AddRange(GenerateProductsForCategory(category4, 3));
+        products.AddRange(GenerateProductsForCategory(category5, 3));
+        products.AddRange(GenerateProductsForCategory(category6, 3));
 
         return products;
     }
@@ -97,10 +127,9 @@ public class SeedingData
             {
                 var productImage = new ProductImage
                 {
-                    Id = Guid.NewGuid(),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
-                    Url = $"https://picsum.photos/200/?random={random.Next(100, 1000)}",
+                    ProductImageUrl = $"https://picsum.photos/200/?random={random.Next(100, 1000)}",
                     ProductId = product.Id
                 };
                 productImages.Add(productImage);
@@ -115,7 +144,6 @@ public class SeedingData
             _admin, _customer1
         };
     }
-    //public static List<User> Users = GetUsers();
     public static List<User> Users = GetUsers();
 
     public static List<Address> GetAddresses()

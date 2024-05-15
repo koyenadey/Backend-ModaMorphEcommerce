@@ -8,6 +8,7 @@ public class ProductImage : BaseEntity
     public Guid ProductId { get; set; }
     // navigation
     public Product Product { get; set; }
+
     [Required(ErrorMessage = "Product image url is required")]
-    public string Url { get; set; }
+    public string ProductImageUrl { get; set; }
 }

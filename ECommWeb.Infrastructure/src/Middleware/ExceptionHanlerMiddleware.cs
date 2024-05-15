@@ -23,12 +23,11 @@ namespace ECommWeb.Infrastructure.src.Middleware
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Unauthorized access");
             }
-
-            catch (DbUpdateException ex)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(ex.InnerException.Message);
-            }
+            // catch (DbUpdateException ex)
+            // {
+            //     context.Response.StatusCode = 400;
+            //     await context.Response.WriteAsync(ex.Message);
+            // }
             catch (AppException ex)
             {
                 context.Response.StatusCode = (int)ex.StatusCode;
@@ -39,11 +38,11 @@ namespace ECommWeb.Infrastructure.src.Middleware
                 context.Response.StatusCode = (int)ex.StatusCode;
                 await context.Response.WriteAsync(ex.Message);
             }
-            catch (Exception ex)
-            {
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync(ex.Message);
-            }
+            // catch (Exception ex)
+            // {
+            //     context.Response.StatusCode = 500;
+            //     await context.Response.WriteAsync(ex.Message);
+            // }
 
         }
     }

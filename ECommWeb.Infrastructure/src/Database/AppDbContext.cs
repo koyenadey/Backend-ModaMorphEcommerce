@@ -6,18 +6,17 @@ namespace ECommWeb.Infrastructure.src.Database;
 
 public class AppDbContext : DbContext
 {
-    private readonly SeedingData _seedingData;
     public DbSet<User> Users { get; set; } // table `Users` -> `users`
     public DbSet<Address> Addresses { get; set; } // table `Addresses` -> `addresses`
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
+    // public DbSet<Category> Categories { get; set; }
 
     // public DbSet<Order> Orders { get; set; } // table `Orders` -> `orders`
-    // public DbSet<OrderProduct> OrderedProducts { get; set; } // table `Orders` -> `orders`
+    //public DbSet<OrderProduct> OrderedProducts { get; set; } // table `Orders` -> `orders`
     // public DbSet<Review> Reviews { get; set; } // table `Reviews` -> `reviews`
     // public DbSet<ReviewImage> ReviewImages { get; set; } // table `Reviews` -> `reviews`
     // public DbSet<Payment> Payments { get; set; } // table `Payment` -> `payment`
-    // public DbSet<Product> Products { get; set; }
-    // public DbSet<Category> Categories { get; set; }
-    // public DbSet<ProductImage> ProductImages { get; set; }
 
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -57,25 +56,29 @@ public class AppDbContext : DbContext
             entity.HasData(SeedingData.GetAddresses());
         });
         // -----------------------------------------------------------------------------------------------
-        // modelBuilder.Entity<Category>(e =>
-        //     {
-        //         e.HasData(SeedingData.GetCategories());
-        //         e.HasIndex(e => e.Name).IsUnique();
-        //     });
+        modelBuilder.Entity<Category>(e =>
+            {
+                e.HasData(SeedingData.GetCategories());
+                e.HasIndex(e => e.Name).IsUnique();
+            });
         // -----------------------------------------------------------------------------------------------
-        // modelBuilder.Entity<Product>(e =>
-        // {
-        //     e.HasData(SeedingData.Products);
-        //     e.HasIndex(p => p.Name).IsUnique();
-        //     e.HasMany(p => p.Images) // Product has many ProductImage
-        //     .WithOne()              // ProductImage bonds to one Product
-        //     .HasForeignKey(pi => pi.ProductId); // foreign key
-        // });
+        modelBuilder.Entity<Product>(e =>
+        {
+            e.HasData(SeedingData.Products);
+            e.HasIndex(p => p.Name).IsUnique();
+            e.HasMany(p => p.Images) // Product has many ProductImage
+            .WithOne()              // ProductImage bonds to one Product
+            .HasForeignKey(pi => pi.ProductId); // foreign key
+        });
         // -----------------------------------------------------------------------------------------------
-        // modelBuilder.Entity<ProductImage>(e =>
-        // {
-        //     e.HasData(SeedingData.GetProductImages());
-        // });
+        modelBuilder.Entity<ProductImage>(e =>
+        {
+            e.HasOne(pi => pi.Product)   // Configure the navigation property to Product
+            .WithMany(p => p.Images) // Product has many ProductImages
+            .HasForeignKey(pi => pi.ProductId) // Set the foreign key
+            .IsRequired(); // Ensure that the relationship is required (optional)
+            e.HasData(SeedingData.GetProductImages()); // Seed the product images
+        });
         // -----------------------------------------------------------------------------------------------
         // modelBuilder.Entity<ReviewImage>(entity =>
         // {

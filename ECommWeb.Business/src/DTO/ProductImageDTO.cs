@@ -4,15 +4,16 @@ namespace ECommWeb.Business.src.DTO;
 
 public class ProductImageReadDTO : BaseEntity
 {
-    public string Url { get; set; }
+    public Guid ProductId { get; set; }
+    public string ImageUrl { get; set; }
 }
 
 public class ProductImageCreateDTO
 {
-    public string Url { get; set; }
+    public string ImageUrl { get; set; }
 }
 
 public class ProductImageUpdateDTO
 {
-    public string Url { get; set; }
+    public string ImageUrl { get; set; }
 }
