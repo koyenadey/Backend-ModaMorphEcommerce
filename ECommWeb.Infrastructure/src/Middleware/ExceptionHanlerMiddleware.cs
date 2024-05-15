@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ECommWeb.Core.src.Common;
+using ECommWeb.Business.src.Shared;
 
 
 namespace ECommWeb.Infrastructure.src.Middleware
@@ -33,11 +34,16 @@ namespace ECommWeb.Infrastructure.src.Middleware
                 context.Response.StatusCode = (int)ex.StatusCode;
                 await context.Response.WriteAsync(ex.Message);
             }
-            // catch (Exception ex)
-            // {
-            //     context.Response.StatusCode = 500;
-            //     await context.Response.WriteAsync(ex.Message);
-            // }
+            catch (CustomException ex)
+            {
+                context.Response.StatusCode = (int)ex.StatusCode;
+                await context.Response.WriteAsync(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync(ex.Message);
+            }
 
         }
     }

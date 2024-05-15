@@ -40,7 +40,7 @@ public class AuthService : IAuthService
         {
             throw CustomException.NotFoundException("Email not found");
         }
-        Console.WriteLine("AuthService hashed password: " + foundByEmail.Password + "salt: " + foundByEmail.Salt);
+
         var isPasswordMatch = _passwordService.VerifyPassword(credential.Password, foundByEmail.Password, foundByEmail.Salt);
         if (isPasswordMatch)
         {

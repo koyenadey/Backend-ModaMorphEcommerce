@@ -34,16 +34,38 @@ public class UserRepo : IUserRepo
     public async Task<bool> CheckEmailAsync(string email)
     {
         var result = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        Console.WriteLine(result);
+
         if (result == null) return false;
         return true;
     }
 
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<User> CreateUserAsync(User user, Address address)
     {
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
-        return user;
+        using (var transaction = await _context.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                await _context.Users.AddAsync(user);
+                await _context.Addresses.AddAsync(address);
+                await _context.SaveChangesAsync();
+
+
+                //Fetch the users again by loading up the addresses
+                var addedUser = await _context.Users.Include(u => u.Addresses).FirstOrDefaultAsync(u => u.Id == user.Id);
+
+                //Now commit the transaction
+                await transaction.CommitAsync();
+
+                //return the completely loaded uswe
+                return addedUser;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
     }
 
     public async Task<bool> DeleteUserByIdAsync(Guid id)
@@ -120,7 +142,6 @@ public class UserRepo : IUserRepo
     public async Task<User> GetUserByCredentialsAsync(UserCredential userCredential)
     {
         var foundUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == userCredential.Email);
-        //Console.WriteLine(foundUser.Email);
         return foundUser;
     }
 }

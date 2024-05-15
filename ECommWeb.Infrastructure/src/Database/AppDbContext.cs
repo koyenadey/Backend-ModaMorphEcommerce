@@ -31,6 +31,15 @@ public class AppDbContext : DbContext
         AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder
+            .AddInterceptors(new TimeStampInteceptor())
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors()
+            .UseSnakeCaseNamingConvention();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresEnum<Role>();
@@ -41,6 +50,11 @@ public class AppDbContext : DbContext
         {
             entity.HasIndex(u => u.Email).IsUnique();
             entity.HasData(SeedingData.GetUsers());
+        });
+
+        modelBuilder.Entity<Address>(entity =>
+        {
+            entity.HasData(SeedingData.GetAddresses());
         });
         // -----------------------------------------------------------------------------------------------
         // modelBuilder.Entity<Category>(e =>

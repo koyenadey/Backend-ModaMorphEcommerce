@@ -27,8 +27,6 @@ public class TokenService : ITokenService
 
         //claims (data to be encoded) should be in form of List
 
-        Console.WriteLine("Get Token " + foundUser.UserName);
-
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Email,foundUser.Email),
@@ -36,12 +34,8 @@ public class TokenService : ITokenService
             new Claim(ClaimTypes.Role,foundUser.Role.ToString()),
         };
 
-        Console.WriteLine("Claims" + claims);
-
         //key (secret key)
         var jwtKey = _configuration["Secrets:JwtKey"];
-
-        Console.WriteLine("Jwt Key" + jwtKey);
 
         if (jwtKey is null)
         {

@@ -7,6 +7,7 @@ using ECommWeb.Business.src.DTO;
 using ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
+using ECommWeb.Business.src.Shared;
 
 
 namespace Server.Controller.src.Controller
@@ -91,10 +92,10 @@ namespace Server.Controller.src.Controller
 
         [Authorize]
         [HttpPatch("{id}")]
-        public async Task<UserReadDto> UpdateUserByIdAsync([FromBody] UserUpdateDto user)
+        public async Task<UserReadDto> UpdateUserByIdAsync([FromBody] UserUpdateDto user, [FromRoute] Guid id)
         {
             var userClaims = (_httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new InvalidOperationException("Please login to use this facility!");
-            return await _userService.UpdateUserByIdAsync(user);
+            return await _userService.UpdateUserByIdAsync(id, user);
         }
         [Authorize]
         [HttpPatch("change_password")]

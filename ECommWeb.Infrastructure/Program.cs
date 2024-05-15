@@ -37,12 +37,13 @@ builder.Services.AddDbContext<AppDbContext>
     options =>
     options.UseNpgsql(dataSource)
     .UseSnakeCaseNamingConvention()
-    .AddInterceptors(new TimeStampInteceptor())
 );
 
 // service registration -> automatically create all instances of dependencies
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAddressRepo, AddressRepo>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();

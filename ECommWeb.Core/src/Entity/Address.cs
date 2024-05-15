@@ -7,7 +7,8 @@ public class Address : BaseEntity
 {
     [Required(ErrorMessage = "Address details is required")]
     [StringLength(50, ErrorMessage = "50 characters at most.")]
-    public string AddressLine { get; set; }
+    public string? AddressLine { get; set; }
+
     [Column(TypeName = "character varying(50)")]
     [Required(ErrorMessage = "Street is required")]
     public string Street { get; set; }
@@ -28,31 +29,10 @@ public class Address : BaseEntity
     [Phone(ErrorMessage = "Invalid phone number")]
     public string PhoneNumber { get; set; }
 
-    [Required(ErrorMessage = "First name is required")]
-    [StringLength(50, ErrorMessage = "First name cannot be longer than 50 characters")]
-    public string FirstName { get; set; }
-
-    [StringLength(50, ErrorMessage = "Last name cannot be longer than 50 characters")]
-    public string LastName { get; set; }
-
     [StringLength(100, ErrorMessage = "Landmark cannot be longer than 100 characters")]
     public string Landmark { get; set; }
     // foreign key
     public Guid UserId { get; set; }
     // navigation
     public User User { get; set; }
-    public Address(string addressLine, string street, string city, string country, string postcode, string phoneNumber, string firstName, string lastName, string landmark, Guid userId)
-    {
-        Id = Guid.NewGuid();
-        AddressLine = addressLine;
-        Street = street;
-        City = city;
-        Country = country;
-        Postcode = postcode;
-        PhoneNumber = phoneNumber;
-        FirstName = firstName;
-        LastName = lastName;
-        Landmark = landmark;
-        UserId = userId;
-    }
 }

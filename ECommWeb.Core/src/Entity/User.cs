@@ -25,26 +25,9 @@ namespace ECommWeb.Core.src.Entity
         // relation - a user has a list of addresses
         public IEnumerable<Address> Addresses { get; set; }
 
-        // wishlist - a user has a list of wishlists
-        //public IEnumerable<Wishlist> Wishlists { get; set; }
+        [MaxLength(255)]
+        public string Avatar { get; set; }
 
-        public User(string userName, string email, string password, byte[] salt, Role role = Role.Customer)
-        {
-            Id = Guid.NewGuid();
-            UserName = userName;
-            Email = email;
-            Password = password;
-            Role = role;
-            Salt = salt;
-        }
-        public User(string userName, string email, string password, Role role = Role.Customer)
-        {
-            Id = Guid.NewGuid();
-            UserName = userName;
-            Email = email;
-            Password = password;
-            Role = role;
-        }
     }
 
 }

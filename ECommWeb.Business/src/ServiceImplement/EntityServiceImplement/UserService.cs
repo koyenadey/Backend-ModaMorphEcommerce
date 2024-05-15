@@ -33,7 +33,8 @@ public class UserService : IUserService
         userToAdd.Password = _passwordService.HashPassword(userToAdd.Password, out byte[] salt);
         userToAdd.Salt = salt;
         userToAdd.Role = Role.Admin;
-        var addedUser = await _userRepo.CreateUserAsync(userToAdd);
+        var adminAddress = _mapper.Map<Address>(GetAddress(user, userToAdd.Id));
+        var addedUser = await _userRepo.CreateUserAsync(userToAdd, adminAddress);
         return _mapper.Map<UserReadDto>(addedUser);
     }
 
@@ -50,8 +51,13 @@ public class UserService : IUserService
         var userToAdd = _mapper.Map<User>(user);
         userToAdd.Password = hashedPassword;
         userToAdd.Salt = salt;
-        var addedUser = await _userRepo.CreateUserAsync(userToAdd);
-        Console.WriteLine(addedUser.Id);
+
+        var userAddress = _mapper.Map<Address>(GetAddress(user, userToAdd.Id));
+
+        userToAdd.DefaultAddressId = userAddress.Id;
+
+        var addedUser = await _userRepo.CreateUserAsync(userToAdd, userAddress);
+
         return _mapper.Map<UserReadDto>(addedUser);
 
     }
@@ -66,13 +72,10 @@ public class UserService : IUserService
         return true;
     }
 
-
-
     public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync(QueryOptions options)
     {
         var users = await _userRepo.GetAllUsersAsync(options);
         return _mapper.Map<IEnumerable<UserReadDto>>(users);
-        //return users.Select(user => new UserReadDto().Transform(user));
     }
 
     public async Task<UserReadDto> GetUserByIdAsync(Guid id)
@@ -82,29 +85,28 @@ public class UserService : IUserService
         {
             throw new ResourceNotFoundException("No user found by this id.");
         }
-        if (user == null)
-        {
-            throw new ResourceNotFoundException("No user found by this id.");
-        }
         return _mapper.Map<UserReadDto>(user);
-        //return new UserReadDto().Transform(user);
     }
 
-    public async Task<UserReadDto> UpdateUserByIdAsync(UserUpdateDto user)
+    public async Task<UserReadDto> UpdateUserByIdAsync(Guid userId, UserUpdateDto user)
     {
-        var userToUpdate = await _userRepo.GetUserByIdAsync(user.Id);
-        if (userToUpdate == null)
-        {
-            throw new ResourceNotFoundException("No user found to update.");
-        }
-        var userNewInfo = user.UpdateUser(userToUpdate);
-        var updatedUser = await _userRepo.UpdateUserByIdAsync(userNewInfo);
+        var userToUpdate = await _userRepo.GetUserByIdAsync(userId);
+
+        if (userToUpdate == null) throw new ResourceNotFoundException("No user found to update.");
+        if (user.UserName == null) throw new ValidationException("User name is required.");
+        if (user.Password == null) throw new ValidationException("Password is required.");
+
+        userToUpdate.UserName = user.UserName;
+        userToUpdate.Password = _passwordService.HashPassword(user.Password, out byte[] salt);
+        userToUpdate.Salt = salt;
+
+        var updatedUser = await _userRepo.UpdateUserByIdAsync(userToUpdate);
         if (updatedUser == null)
         {
             throw new InvalidOperationException("Updating user failed.");
         }
+
         return _mapper.Map<UserReadDto>(updatedUser);
-        //return new UserReadDto().Transform(updatedUser);
     }
     public async Task<bool> ChangePassword(Guid id, string password)
     {
@@ -115,4 +117,21 @@ public class UserService : IUserService
         }
         return await _userRepo.ChangePasswordAsync(id, password);
     }
+
+    private AddressCreateDto GetAddress(UserCreateDto userCreateDto, Guid userId)
+    {
+        var userAddress = new AddressCreateDto
+        {
+            UserId = userId,
+            AddressLine = userCreateDto.AddresLine1,
+            Street = userCreateDto.Street,
+            City = userCreateDto.City,
+            Country = userCreateDto.Country,
+            Postcode = userCreateDto.Postcode,
+            Landmark = userCreateDto.Landmark,
+            PhoneNumber = userCreateDto.PhoneNumber,
+        };
+        return userAddress;
+    }
+
 }

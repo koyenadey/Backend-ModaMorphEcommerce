@@ -3,47 +3,53 @@ using ECommWeb.Core.src.RepoAbstract;
 using ECommWeb.Business.src.DTO;
 using ECommWeb.Core.src.Common;
 using ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
+using AutoMapper;
 
 namespace ECommWeb.Business.src.ServiceImplement.EntityServiceImplement;
 
 public class AddressService : IAddressService
 {
     private readonly IAddressRepo _addressRepo;
-    public AddressService(IAddressRepo addressRepo)
+    private readonly IMapper _mapper;
+    public AddressService(IAddressRepo addressRepo, IMapper mapper)
     {
         _addressRepo = addressRepo;
+        _mapper = mapper;
     }
-    public async Task<AddressReadDto> CreateAddressAsync(Guid userId, AddressCreateDto address)
+    public async Task<AddressReadDto> CreateAddressAsync(AddressCreateDto address)
     {
-        var addressToAdd = address.CreateAddress(userId);
+        var addressToAdd = _mapper.Map<Address>(address);
         var addedAddress = await _addressRepo.CreateAddressAsync(addressToAdd);
-        return new AddressReadDto().Transform(addedAddress);
+        return _mapper.Map<AddressReadDto>(addedAddress);
     }
 
     public async Task<bool> DeleteAddressByIdAsync(Guid id)
     {
+        if (id == Guid.Empty) throw new ValidationException("Id is empty");
+
         var isDeleted = await _addressRepo.DeleteAddressByIdAsync(id);
-        if (!isDeleted)
-        {
-            throw new ResourceNotFoundException("Address is not found.");
-        }
+
+        if (!isDeleted) throw new ResourceNotFoundException("Address is not found.");
+
         return true;
     }
 
     public async Task<AddressReadDto> GetAddressByIdAsync(Guid id)
     {
-        var address = await _addressRepo.GetAddressByIdAsync(id);
-        if (address == null)
-        {
-            throw new ResourceNotFoundException("No Address found by this id.");
-        }
-        return new AddressReadDto().Transform(address);
+        if (id == Guid.Empty) throw new ValidationException("Id is empty");
+
+        var addressFound = await _addressRepo.GetAddressByIdAsync(id);
+
+        if (addressFound == null) throw new ResourceNotFoundException("No Address found by this id.");
+
+        return _mapper.Map<AddressReadDto>(addressFound);
     }
 
     public async Task<IEnumerable<AddressReadDto>> GetAddressesByUserAsync(Guid userId, QueryOptions? options)
     {
+        if (userId == Guid.Empty) throw new ValidationException("Id is empty");
         var addresses = await _addressRepo.GetAddressesByUserAsync(userId, options);
-        return addresses.Select(a => new AddressReadDto().Transform(a));
+        return _mapper.Map<IEnumerable<AddressReadDto>>(addresses);
     }
 
 
@@ -52,7 +58,7 @@ public class AddressService : IAddressService
         var defaultAddress = await _addressRepo.GetDefaultAddressAsync(userId);
         if (defaultAddress == null)
             throw new ResourceNotFoundException("The user doesn't have a default address.");
-        return new AddressReadDto().Transform(defaultAddress);
+        return _mapper.Map<AddressReadDto>(defaultAddress);
     }
 
     public async Task<bool> SetDefaultAddressAsync(Guid userId, Guid addressId)
@@ -65,19 +71,31 @@ public class AddressService : IAddressService
         return isSet;
     }
 
-    public async Task<AddressReadDto> UpdateAddressByIdAsync(AddressUpdateDto address)
+    public async Task<AddressReadDto> UpdateAddressByIdAsync(Guid addressId, AddressUpdateDto addressDto)
     {
-        var addressToUpdate = await _addressRepo.GetAddressByIdAsync(address.Id);
-        if (addressToUpdate == null)
-        {
+        var addressFound = await _addressRepo.GetAddressByIdAsync(addressId);
+
+        if (addressFound == null)
             throw new ResourceNotFoundException("No address found to update.");
-        }
-        var addressNewInfo = address.UpdateAddress(addressToUpdate);
+
+        var addressNewInfo = GetUpdatedAddress(addressFound, addressDto);
+
         var updatedAddress = await _addressRepo.UpdateAddressByIdAsync(addressNewInfo);
+
         if (updatedAddress == null)
-        {
             throw new InvalidOperationException("Updating address failed.");
-        }
-        return new AddressReadDto().Transform(updatedAddress);
+
+        return _mapper.Map<AddressReadDto>(updatedAddress);
+    }
+    private Address GetUpdatedAddress(Address addressToUpdate, AddressUpdateDto updateAddressDto)
+    {
+        addressToUpdate.AddressLine = updateAddressDto.AddressLine;
+        addressToUpdate.City = updateAddressDto.City;
+        addressToUpdate.Street = updateAddressDto.Street;
+        addressToUpdate.Postcode = updateAddressDto.Postcode;
+        addressToUpdate.PhoneNumber = updateAddressDto.PhoneNumber;
+        addressToUpdate.Landmark = updateAddressDto.Landmark;
+
+        return addressToUpdate;
     }
 }

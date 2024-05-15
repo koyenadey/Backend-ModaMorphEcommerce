@@ -10,7 +10,7 @@ namespace ECommWeb.Infrastructure.src.Database;
 
 public class SeedingData
 {
-
+    private static readonly IPasswordService _passwordService = new PasswordService();
     private static Random random = new Random();
     private static Category category1 = new Category("Electronics", $"https://picsum.photos/200/?random={random.Next(10)}");
     private static Category category2 = new Category("Clothing", $"https://picsum.photos/200/?random={random.Next(10)}");
@@ -18,6 +18,32 @@ public class SeedingData
     private static Category category4 = new Category("Books", $"https://picsum.photos/200/?random={random.Next(10)}");
     private static Category category5 = new Category("Toys and Games", $"https://picsum.photos/200/?random={random.Next(10)}");
     private static Category category6 = new Category("Sports", $"https://picsum.photos/200/?random={random.Next(10)}");
+
+    private static User _admin = new User
+    {
+        Id = Guid.NewGuid(),
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow,
+        UserName = "john",
+        Email = "john.doe@mail.com",
+        Avatar = "example.jpeg",
+        Password = _passwordService.HashPassword("Admin123", out var salt),
+        Salt = salt,
+        Role = Role.Admin,
+    };
+
+    private static User _customer1 = new User
+    {
+        Id = Guid.NewGuid(),
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow,
+        UserName = "Maria",
+        Email = "maria@testmail.com",
+        Avatar = "example1.jpeg",
+        Password = _passwordService.HashPassword("customer1", out var salt),
+        Salt = salt,
+        Role = Role.Customer,
+    };
 
 
     public static List<Category> GetCategories()
@@ -85,53 +111,42 @@ public class SeedingData
 
     public static List<User> GetUsers()
     {
-        var hashedPassword1 = CreateHashPassword("JohnAdmin1234", out byte[] salt);
-        var hashedPassword2 = CreateHashPassword("Maria@Cstomer", out byte[] salt1);
-        return new List<User>
-        {
-            new User(
-                "John",
-                "john.doe@mail.com",
-                hashedPassword1,
-                salt,
-                Role.Admin
-            ),
-            new User(
-                "maria",
-                "maria@mail.com",
-                hashedPassword2,
-                salt1
-            )
+        return new List<User>{
+            _admin, _customer1
         };
     }
-    public static string CreateHashPassword(string password, out byte[] salt)
-    {
-        salt = RandomNumberGenerator.GetBytes(16);
-        string hashedPassword = Convert.ToBase64String(
-            KeyDerivation.Pbkdf2
-            (
-                password: password!,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 100000,
-                numBytesRequested: 256 / 8
-            )
-        );
-        return hashedPassword;
-    }
-    public List<User> Users = GetUsers();
+    //public static List<User> Users = GetUsers();
+    public static List<User> Users = GetUsers();
 
-    // public List<Address> GetAddresses()
-    // {
-    //     var user = Users[1];
-    //     return new List<Address>{
-    //         new Address(
-    //             "41C", "Asemakatu", "Pori", "Finland", "61200", "4198767000", "John", "Mull", "K-market",
-    //             user.Id
-    //         )
-    //     };
-    // }
-    // public static List<Address> Addresses = GetAddresses();
+    public static List<Address> GetAddresses()
+    {
+        var user1Address = new Address
+        {
+            AddressLine = "41C",
+            Street = "Kauppakatu",
+            City = "Pori",
+            Country = "Finland",
+            Postcode = "61200",
+            PhoneNumber = "4198767000",
+            Landmark = "K-market",
+            UserId = Users[0].Id
+        };
+        var user2Address = new Address
+        {
+            AddressLine = "2C",
+            Street = "Mannerheimintie",
+            City = "Helsinki",
+            Country = "Finland",
+            Postcode = "00260",
+            PhoneNumber = "4198767000",
+            Landmark = "Taka-Töölö",
+            UserId = Users[1].Id
+        }; ;
+        return new List<Address>{
+            user1Address, user2Address
+        };
+    }
+    public static List<Address> Addresses = GetAddresses();
 
     // public static List<Wishlist> GetWishlists()
     // {
