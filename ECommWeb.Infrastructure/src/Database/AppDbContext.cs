@@ -11,12 +11,10 @@ public class AppDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<Category> Categories { get; set; }
-
-    // public DbSet<Order> Orders { get; set; } // table `Orders` -> `orders`
-    //public DbSet<OrderProduct> OrderedProducts { get; set; } // table `Orders` -> `orders`
-    // public DbSet<Review> Reviews { get; set; } // table `Reviews` -> `reviews`
-    // public DbSet<ReviewImage> ReviewImages { get; set; } // table `Reviews` -> `reviews`
-    // public DbSet<Payment> Payments { get; set; } // table `Payment` -> `payment`
+    public DbSet<Order> Orders { get; set; } // table `Orders` -> `orders`
+    public DbSet<OrderProduct> OrderedProducts { get; set; } // table `Orders` -> `orders`
+    public DbSet<Review> Reviews { get; set; } // table `Reviews` -> `reviews`
+    public DbSet<ReviewImage> ReviewImages { get; set; } // table `Reviews` -> `reviews`
 
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -48,11 +46,23 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasIndex(u => u.Email).IsUnique();
+            entity.HasMany(u => u.Addresses)
+                  .WithOne(a => a.User)
+                  .HasForeignKey(a => a.UserId);
+            entity.HasMany(u => u.Orders)
+                  .WithOne(o => o.User)
+                  .HasForeignKey(o => o.UserId);
+            entity.HasMany(u => u.Reviews)
+                  .WithOne(r => r.User)
+                  .HasForeignKey(r => r.UserId);
             entity.HasData(SeedingData.GetUsers());
         });
-
+        // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Address>(entity =>
         {
+            entity.HasOne(a => a.User)
+                  .WithMany(u => u.Addresses)
+                  .HasForeignKey(a => a.UserId);
             entity.HasData(SeedingData.GetAddresses());
         });
         // -----------------------------------------------------------------------------------------------
@@ -80,23 +90,61 @@ public class AppDbContext : DbContext
             e.HasData(SeedingData.GetProductImages()); // Seed the product images
         });
         // -----------------------------------------------------------------------------------------------
-        // modelBuilder.Entity<ReviewImage>(entity =>
-        // {
-        //     entity.HasNoKey();
-        // });
-        // -----------------------------------------------------------------------------------------------
-        // modelBuilder.Entity<Wishlist>(entity =>
-        // {
-        //     entity.HasIndex(wl => new { wl.Name, wl.UserId }).IsUnique();
-        //     entity.HasData(SeedingData.Wishlists);
-        // });
-        // -----------------------------------------------------------------------------------------------
-        // modelBuilder.Entity<Wishlist>(entity =>
-        // {
-        //     entity.HasIndex(wl => new { wl.Name, wl.UserId }).IsUnique();
-        //     entity.HasData(SeedingData.Wishlists);
-        // });
+        modelBuilder.Entity<Order>(e =>
+        {
+            //User-Order relationship
+            e.HasOne(o => o.User)   // Configure the navigation property to User
+                .WithMany(u => u.Orders) // A User has many Order
+                .HasForeignKey(u => u.UserId) // Set the foreign key
+                .IsRequired(); // Ensure that the relationship is required (optional)
 
+            //Order-Address relationship   
+            e.HasOne(o => o.Address)
+                .WithMany(a => a.Orders)
+                .HasForeignKey(o => o.AddressId);
+
+            //Order-OrderedProduct relationship   
+            e.HasMany(o => o.OrderedProducts)
+                .WithOne(op => op.Order)
+                .HasForeignKey(op => op.OrderId);
+
+            //e.HasData(SeedingData.GetOrders()); // Seed the order data
+        });
+        // -----------------------------------------------------------------------------------------------
+        //OrderProduct-Product relationship
+        modelBuilder.Entity<OrderProduct>(e =>
+        {
+            e.HasOne(op => op.Product)
+                .WithMany(p => p.OrderedProducts)
+                .HasForeignKey(op => op.ProductId);
+            //e.HasData(SeedingData.GetOrderedProducts());
+        });
+        // -----------------------------------------------------------------------------------------------
+
+        modelBuilder.Entity<Review>(e =>
+        {
+            //Review-OrderedProduct relationship
+            e.HasOne(r => r.OrderedProduct)
+                .WithMany(op => op.Reviews)
+                .HasForeignKey(r => r.OrderedProductId);
+
+            //Review-User relationship
+            e.HasOne(u => u.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(u => u.UserId);
+
+            //Review-ReviewImages relationship
+            e.HasMany(r => r.Images)
+                .WithOne()
+                .HasForeignKey(r => r.ReviewId);
+        });
+        // -----------------------------------------------------------------------------------------------
+        modelBuilder.Entity<ReviewImage>(entity =>
+        {
+            entity.HasOne(ri => ri.Review)
+                  .WithMany(r => r.Images)
+                  .HasForeignKey(ri => ri.ReviewId);
+        });
 
         base.OnModelCreating(modelBuilder);
     }

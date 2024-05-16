@@ -6,6 +6,8 @@ using ECommWeb.Infrastructure.src;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using System;
+using Microsoft.Extensions.Logging;
 
 namespace ECommWeb.Infrastructure.src.Database;
 
@@ -70,6 +72,47 @@ public class SeedingData
         Salt = salt,
         Role = Role.Customer,
     };
+
+    public static List<User> GetUsers()
+    {
+        return new List<User>{
+            _admin, _customer1
+        };
+    }
+    public static List<User> Users = GetUsers();
+
+    private static Address user1Address = new Address
+    {
+        Id = Guid.NewGuid(),
+        AddressLine = "41C",
+        Street = "Kauppakatu",
+        City = "Pori",
+        Country = "Finland",
+        Postcode = "61200",
+        PhoneNumber = "4198767000",
+        Landmark = "K-market",
+        UserId = Users[0].Id
+    };
+    private static Address user2Address = new Address
+    {
+        Id = Guid.NewGuid(),
+        AddressLine = "2C",
+        Street = "Mannerheimintie",
+        City = "Helsinki",
+        Country = "Finland",
+        Postcode = "00260",
+        PhoneNumber = "4198767000",
+        Landmark = "Taka-Töölö",
+        UserId = Users[1].Id
+    };
+
+    public static List<Address> GetAddresses()
+    {
+        return new List<Address>{
+            user1Address, user2Address
+        };
+    }
+    public static List<Address> Addresses = GetAddresses();
 
 
     public static List<Category> GetCategories()
@@ -138,73 +181,52 @@ public class SeedingData
         return productImages;
     }
 
-    public static List<User> GetUsers()
+    public static List<Order> GetOrders()
     {
-        return new List<User>{
-            _admin, _customer1
+        return new List<Order>{
+            new Order
+            {
+                OrderDate = DateTime.Now,
+                Status = Status.processing,
+                UserId = Users[0].Id,
+                AddressId = Addresses[0].Id
+            },
+            new Order
+            {
+                OrderDate = DateTime.Now,
+                Status = Status.pending,
+                UserId = Users[0].Id,
+                AddressId = Addresses[1].Id
+            }
         };
     }
-    public static List<User> Users = GetUsers();
-
-    public static List<Address> GetAddresses()
+    public static List<Order> Orders = GetOrders();
+    public static List<OrderProduct> GetOrderedProducts()
     {
-        var user1Address = new Address
-        {
-            AddressLine = "41C",
-            Street = "Kauppakatu",
-            City = "Pori",
-            Country = "Finland",
-            Postcode = "61200",
-            PhoneNumber = "4198767000",
-            Landmark = "K-market",
-            UserId = Users[0].Id
-        };
-        var user2Address = new Address
-        {
-            AddressLine = "2C",
-            Street = "Mannerheimintie",
-            City = "Helsinki",
-            Country = "Finland",
-            Postcode = "00260",
-            PhoneNumber = "4198767000",
-            Landmark = "Taka-Töölö",
-            UserId = Users[1].Id
-        }; ;
-        return new List<Address>{
-            user1Address, user2Address
+        return new List<OrderProduct>{
+            new OrderProduct
+            {
+                OrderId = Orders[0].Id,
+                ProductId = Products[0].Id,
+                Quantity = 3,
+                PriceAtPurchase = 17.99,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+            },
+
+            new OrderProduct
+            {
+                OrderId = Orders[0].Id,
+                ProductId = Products[1].Id,
+                Quantity = 1,
+                PriceAtPurchase = 25.99,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+            },
+
         };
     }
-    public static List<Address> Addresses = GetAddresses();
-
-    // public static List<Wishlist> GetWishlists()
-    // {
-    //     return new List<Wishlist>{
-    //         new Wishlist("My wishlist 1", Users[1].Id)
-    //     };
-    // }
-    //public static List<Wishlist> Wishlists = GetWishlists();
-
-    // public static List<WishlistItem> GetWishlistItems()
-    // {
-    //     return new List<WishlistItem>{
-    //         new WishlistItem(Products[0].Id, Wishlists[0].Id)
-    //     };
-    // }
-    // public static List<Order> GetOrders()
-    // {
-    //     return new List<Order>{
-    //         new Order(Users[1].Id, Addresses[0].Id)
-    //     };
-    // }
-    // public static List<Order> Orders = GetOrders();
-    // public static List<OrderProduct> GetOrderProducts()
-    // {
-    //     return new List<OrderProduct>{
-    //         new OrderProduct(Orders[0].Id,Products[0].Id, 3),
-    //         new OrderProduct(Orders[0].Id,Products[1].Id, 1)
-    //     };
-    // }
-    // public static List<OrderProduct> OrderProducts = GetOrderProducts();
+    public static List<OrderProduct> OrderProducts = GetOrderedProducts();
 
 
 

@@ -28,6 +28,15 @@ public class ValidationException : AppException
     }
 }
 
+public class OperationFailedException : AppException
+{
+    public OperationFailedException(string message) : base()
+    {
+        StatusCode = HttpStatusCode.ExpectationFailed;
+        Message = message;
+    }
+}
+
 public class ResourceNotFoundException : AppException
 {
     public ResourceNotFoundException(string message) : base()

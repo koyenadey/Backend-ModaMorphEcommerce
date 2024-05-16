@@ -5,8 +5,8 @@ namespace ECommWeb.Business.src.DTO;
 public class AddressReadDto
 {
     public Guid UserId { get; set; }
-    public string UserName { get; set; }
-    public string Email { get; set; }
+    public string Username { get; set; }
+    public string EmailAddress { get; set; }
     public string AddressLine { get; set; }
     public string Street { get; set; }
     public string City { get; set; }

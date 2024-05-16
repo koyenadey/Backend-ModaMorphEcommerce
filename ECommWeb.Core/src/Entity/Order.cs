@@ -4,8 +4,6 @@ namespace ECommWeb.Core.src.Entity;
 
 public class Order : BaseEntity
 {
-
-    public Guid Id { get; set; }
     public DateTime OrderDate { get; set; }
     public Status Status { get; set; }
     public Guid UserId { get; set; }
@@ -13,13 +11,5 @@ public class Order : BaseEntity
     public DateTime? DateOfDelivery { get; set; }
     public Guid AddressId { get; set; }
     public Address Address { get; set; }
-
-    public Order(Guid userId, Guid addressId)
-    {
-        Id = Guid.NewGuid();
-        OrderDate = DateTime.Now;
-        Status = Status.processing;
-        UserId = userId;
-        AddressId = addressId;
-    }
+    public IEnumerable<OrderProduct> OrderedProducts { get; set; } // A order has many products ordered..relationship eshtablished
 }

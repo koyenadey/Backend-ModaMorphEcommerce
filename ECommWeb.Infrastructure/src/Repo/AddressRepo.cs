@@ -18,8 +18,9 @@ public class AddressRepo : IAddressRepo
     {
         await _context.Addresses.AddAsync(address);
         await _context.SaveChangesAsync();
-        return await _context.Addresses.Include(a => a.User)
-                       .FirstAsync(a => a.Id == address.Id);
+        return await _context.Addresses
+                            .Include(a => a.User)
+                            .FirstAsync(a => a.Id == address.Id);
     }
 
     public async Task<bool> DeleteAddressByIdAsync(Guid id)
@@ -39,35 +40,15 @@ public class AddressRepo : IAddressRepo
 
     public async Task<Address> GetAddressByIdAsync(Guid id)
     {
-        return await _context.Addresses.FirstOrDefaultAsync(a => a.Id == id);
+        return await _context.Addresses.Include(a => a.User).FirstAsync(a => a.Id == id);
     }
 
     public async Task<IEnumerable<Address>> GetAddressesByUserAsync(Guid userId, QueryOptions? options)
     {
-        IQueryable<Address> query = _context.Addresses.Where(adr => adr.UserId == userId);
-        // Apply search filter if a search key is provided
-        if (!string.IsNullOrWhiteSpace(options.SearchKey))
-        {
-            query = query.Where(a => a.AddressLine.Contains(options.SearchKey) ||
-                                      a.City.Contains(options.SearchKey));
-        }
-
-        // Apply sorting if sort type and sort order are specified
-        if (options.sortType.HasValue && options.sortOrder.HasValue)
-        {
-            switch (options.sortType.Value)
-            {
-                case SortType.byCity:
-                    query = options.sortOrder.Value == SortOrder.asc ? query.OrderBy(a => a.City) : query.OrderByDescending(a => a.City);
-                    break;
-            }
-        }
-
-        // Apply pagination
-        int skipCount = options.PageSize * options.PageNo;
-        query = query.Skip(skipCount).Take(options.PageSize);
-
-        return await query.Include(a => a.User).ToListAsync();
+        return await _context.Addresses
+                                .Include(a => a.User)
+                                .Where(adr => adr.UserId == userId)
+                                .ToListAsync();
     }
 
     public async Task<Address> GetDefaultAddressAsync(Guid userId)
@@ -78,7 +59,9 @@ public class AddressRepo : IAddressRepo
         {
             // Find the default address for the user
             var defaultAddressId = user.DefaultAddressId;
-            return await _context.Addresses.FirstOrDefaultAsync(a => a.Id == defaultAddressId);
+            return await _context.Addresses
+                                 .Include(a => a.User)
+                                 .FirstAsync(a => a.Id == defaultAddressId);
         }
         else
         {

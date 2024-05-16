@@ -24,5 +24,6 @@ public class Product : BaseEntity
     public Guid CategoryId { get; set; }
     public Category Category { get; set; } // navigation A product belongs to one category
     public IEnumerable<ProductImage> Images { get; set; } // relationship A product has a list of Images
+    public IEnumerable<OrderProduct> OrderedProducts { get; set; } // relationship A product can be ordered multiple times
 
 }

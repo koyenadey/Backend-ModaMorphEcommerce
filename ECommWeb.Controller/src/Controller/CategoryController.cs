@@ -18,44 +18,46 @@ public class CategoryController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("api/v1/categories")]
-    public async Task<IEnumerable<CategoryReadDTO>> GetAllCategoriesAsync([FromQuery] QueryOptions options)
+    public async Task<ActionResult<IEnumerable<CategoryReadDTO>>> GetAllCategoriesAsync([FromQuery] QueryOptions options)
     {
-        Console.WriteLine("GetAllCategoriesAsync");
-        try
-        {
-            return await _categoryServices.GetAllCategoriesAsync(options);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        var result = await _categoryServices.GetAllCategoriesAsync(options);
+        if (result == null) return NotFound();
+        else return Ok(result);
     }
 
     [AllowAnonymous]
     [HttpGet("api/v1/category/{id}")]
-    public async Task<CategoryReadDTO> GetCategoryByIdAsync([FromRoute] Guid id)
+    public async Task<ActionResult<CategoryReadDTO>> GetCategoryByIdAsync([FromRoute] Guid id)
     {
-        return await _categoryServices.GetCategoryById(id);
+        var result = await _categoryServices.GetCategoryById(id);
+        if (result == null) return NotFound();
+        else return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost("api/v1/category")]
-    public async Task<CategoryReadDTO> CreateCategoryAsync([FromBody] CategoryCreateDTO category)
+    public async Task<ActionResult<CategoryReadDTO>> CreateCategoryAsync([FromBody] CategoryCreateDTO category)
     {
-        return await _categoryServices.CreateCategory(category);
+        var result = await _categoryServices.CreateCategory(category);
+        if (result == null) return NotFound();
+        else return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPatch("api/v1/category/{id}")]
-    public async Task<CategoryReadDTO> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] CategoryUpdateDTO category)
+    public async Task<ActionResult<CategoryReadDTO>> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] CategoryUpdateDTO category)
     {
-        return await _categoryServices.UpdateACategory(id, category);
+        var result = await _categoryServices.UpdateACategory(id, category);
+        if (result == null) return NotFound();
+        else return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("api/v1/category/{id}")]
-    public async Task<bool> DeleteCategoryAsync([FromRoute] Guid id)
+    public async Task<ActionResult<bool>> DeleteCategoryAsync([FromRoute] Guid id)
     {
-        return await _categoryServices.DeleteCategory(id);
+        var result = await _categoryServices.DeleteCategory(id);
+        if (result == null) return NotFound();
+        else return Ok(result);
     }
 }

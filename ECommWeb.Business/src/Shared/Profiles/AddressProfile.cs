@@ -53,22 +53,6 @@ public class AddressProfile : Profile
         //Profile for ReadAddressDto
         CreateMap<Address, AddressReadDto>()
             .ForMember(
-                dest => dest.UserId,
-                opt => opt.MapFrom(src => src.UserId)
-            )
-            .ForMember(
-                dest => dest.UserName,
-                opt => opt.MapFrom(src => src.User.UserName)
-            )
-            .ForMember(
-                dest => dest.Email,
-                opt => opt.MapFrom(src => src.User.Email)
-            )
-            .ForMember(
-                dest => dest.Email,
-                opt => opt.MapFrom(src => src.User.Email)
-            )
-            .ForMember(
                 dest => dest.AddressLine,
                 opt => opt.MapFrom(src => src.AddressLine ?? "No street address")
             )
@@ -91,33 +75,18 @@ public class AddressProfile : Profile
             .ForMember(
                 dest => dest.Landmark,
                 opt => opt.MapFrom(src => src.Landmark ?? "No landmark listed")
-            );
-
-        // Profile for UpdateAddressDto
-        CreateMap<AddressUpdateDto, Address>()
-            .ForMember(
-                dest => dest.AddressLine,
-                opt => opt.MapFrom(src => src.AddressLine)
             )
             .ForMember(
-                dest => dest.Street,
-                opt => opt.MapFrom(src => src.Street)
+                dest => dest.UserId,
+                opt => opt.MapFrom(src => src.UserId)
             )
             .ForMember(
-                dest => dest.City,
-                opt => opt.MapFrom(src => src.City)
+                dest => dest.Username,
+                opt => opt.MapFrom(src => src.User.UserName)
             )
             .ForMember(
-                dest => dest.Postcode,
-                opt => opt.MapFrom(src => src.Postcode)
-            )
-            .ForMember(
-                dest => dest.PhoneNumber,
-                opt => opt.MapFrom(src => src.PhoneNumber)
-            )
-            .ForMember(
-                dest => dest.Landmark,
-                opt => opt.MapFrom(src => src.Landmark)
+                dest => dest.EmailAddress,
+                opt => opt.MapFrom(src => src.User.Email)
             );
     }
 }

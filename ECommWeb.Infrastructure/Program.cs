@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ECommWeb.Infrastructure.src;
+using Server.Service.src.ServiceImplement.EntityServiceImplement;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,12 +47,12 @@ builder.Services.AddScoped<IAddressRepo, AddressRepo>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
-
-//builder.Services.AddScoped<IProductImageService, ProductImageService>();
-//builder.Services.AddScoped<IProductImageRepo, ProductImageRepo>();
-
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IReviewRepo, ReviewRepo>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

@@ -17,6 +17,9 @@ namespace ECommWeb.Core.src.Entity
         public string Password { get; set; }
         public Role Role { get; set; }
 
+        [MaxLength(255)]
+        public string Avatar { get; set; }
+
         // foreign key
         public Guid DefaultAddressId { get; set; }
 
@@ -25,8 +28,10 @@ namespace ECommWeb.Core.src.Entity
         // relation - a user has a list of addresses
         public IEnumerable<Address> Addresses { get; set; }
 
-        [MaxLength(255)]
-        public string Avatar { get; set; }
+        // A user can have multiple orders
+        public IEnumerable<Order> Orders { get; set; }
+
+        public IEnumerable<Review> Reviews { get; set; }
 
     }
 

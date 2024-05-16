@@ -35,4 +35,7 @@ public class Address : BaseEntity
     public Guid UserId { get; set; }
     // navigation
     public User User { get; set; }
+
+    // An adress can have multiple orders
+    public IEnumerable<Order> Orders { get; set; }
 }
