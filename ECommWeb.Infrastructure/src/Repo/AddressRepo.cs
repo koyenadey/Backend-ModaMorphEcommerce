@@ -47,8 +47,9 @@ public class AddressRepo : IAddressRepo
     {
         return await _context.Addresses
                                 .Include(a => a.User)
-                                .Where(adr => adr.UserId == userId)
+                                .Where(a => a.UserId == userId)
                                 .ToListAsync();
+
     }
 
     public async Task<Address> GetDefaultAddressAsync(Guid userId)
@@ -62,6 +63,7 @@ public class AddressRepo : IAddressRepo
             return await _context.Addresses
                                  .Include(a => a.User)
                                  .FirstAsync(a => a.Id == defaultAddressId);
+
         }
         else
         {

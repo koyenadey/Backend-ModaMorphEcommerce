@@ -19,39 +19,29 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("api/v1/products")]
-    public async Task<IEnumerable<ProductReadDTO>> GetAllProductsAsync([FromQuery] QueryOptions options)
+    public async Task<ActionResult<IEnumerable<ProductReadDTO>>> GetAllProductsAsync([FromQuery] QueryOptions options)
     {
-        Console.WriteLine("GetAllProductsAsync");
-        try
-        {
-            return await _productServices.GetAllProductsAsync(options);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        var products = await _productServices.GetAllProductsAsync(options);
+        if (products == null) return NotFound("Results could not be fetched");
+        return Ok(products);
     }
 
 
     [HttpGet("api/v1/product/{id}")]
-    public async Task<ProductReadDTO> GetProductByIdAsync([FromRoute] Guid id)
+    public async Task<ActionResult<ProductReadDTO>> GetProductByIdAsync([FromRoute] Guid id)
     {
-        return await _productServices.GetProductById(id);
+        var product = await _productServices.GetProductById(id);
+        if (product == null) return NotFound("Product not found");
+        return Ok(product);
     }
 
 
     [HttpGet("api/v1/products/category/{categoryId}")]
-    public async Task<IEnumerable<ProductReadDTO>> GetAllProductsByCategoryAsync([FromRoute] Guid categoryId, [FromQuery] QueryOptions options)
+    public async Task<ActionResult<IEnumerable<ProductReadDTO>>> GetAllProductsByCategoryAsync([FromRoute] Guid categoryId, [FromQuery] QueryOptions options)
     {
-        Console.WriteLine("GetAllProductsByCategoryAsync");
-        try
-        {
-            return await _productServices.GetAllProductsByCategoryAsync(categoryId, options);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        var productsByCategory = await _productServices.GetAllProductsByCategoryAsync(categoryId, options);
+        if (productsByCategory == null) return NotFound("Products not found");
+        return Ok(productsByCategory);
     }
 
 
@@ -63,22 +53,28 @@ public class ProductController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost("api/v1/product")]
-    public async Task<ProductReadDTO> CreateProductAsync([FromBody] ProductCreateDTO product)
+    public async Task<ActionResult<ProductReadDTO>> CreateProductAsync([FromBody] ProductCreateDTO product)
     {
-        return await _productServices.CreateProduct(product);
+        var createdProduct = await _productServices.CreateProduct(product);
+        if (createdProduct == null) return BadRequest("Product could not be created");
+        return Ok(createdProduct);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPatch("api/v1/product/{id}")]
-    public async Task<ProductReadDTO> UpdateProductAsync([FromRoute] Guid id, [FromBody] ProductUpdateDTO category)
+    public async Task<ActionResult<ProductReadDTO>> UpdateProductAsync([FromRoute] Guid id, [FromBody] ProductUpdateDTO category)
     {
-        return await _productServices.UpdateProduct(id, category);
+        var updatedProduct = await _productServices.UpdateProduct(id, category);
+        if (updatedProduct == null) return BadRequest("Product could not be updated");
+        return Ok(updatedProduct);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("api/v1/product/{id}")]
-    public async Task<bool> DeleteProductAsync([FromRoute] Guid id)
+    public async Task<ActionResult<bool>> DeleteProductAsync([FromRoute] Guid id)
     {
-        return await _productServices.DeleteProduct(id);
+        var isDeleted = await _productServices.DeleteProduct(id);
+        if (!isDeleted) return BadRequest("Product could not be deleted");
+        return Ok(isDeleted);
     }
 }

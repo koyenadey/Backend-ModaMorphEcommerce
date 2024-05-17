@@ -14,7 +14,7 @@ public class UserRepo : IUserRepo
     {
         _context = context;
     }
-    public async Task<bool> ChangePasswordAsync(Guid userId, string newPassword)
+    public async Task<bool> ChangePasswordAsync(Guid userId, string newPassword, byte[] salt)
     {
         var user = await GetUserByIdAsync(userId);
 
@@ -24,6 +24,7 @@ public class UserRepo : IUserRepo
         }
         // Update the user's password
         user.Password = newPassword;
+        user.Salt = salt;
         // Save the changes to the database
         await _context.SaveChangesAsync();
         return true;

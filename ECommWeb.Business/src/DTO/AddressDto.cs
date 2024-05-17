@@ -15,6 +15,23 @@ public class AddressReadDto
     public string PhoneNumber { get; set; }
     public string Landmark { get; set; }
 
+    public AddressReadDto MapToAddressReadDto(Address address)
+    {
+        return new AddressReadDto
+        {
+            UserId = address.UserId,
+            Username = address.User?.UserName,
+            EmailAddress = address.User?.Email,
+            AddressLine = address.AddressLine ?? "No street address",
+            Street = address.Street,
+            City = address.City,
+            Country = address.Country,
+            Postcode = address.Postcode,
+            PhoneNumber = address.PhoneNumber,
+            Landmark = address.Landmark ?? "No landmark listed"
+        };
+    }
+
 }
 
 public class AddressCreateDto

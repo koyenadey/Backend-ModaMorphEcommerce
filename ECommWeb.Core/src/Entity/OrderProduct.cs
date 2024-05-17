@@ -8,6 +8,5 @@ public class OrderProduct : BaseEntity
     public Product Product { get; set; }
     public int Quantity { get; set; }
     public double PriceAtPurchase { get; set; }
-    public IEnumerable<Review> Reviews { get; set; } // one product in a order can have many reviews
 
 }

@@ -115,7 +115,8 @@ public class UserService : IUserService
         {
             throw new ResourceNotFoundException("No user found by this id.");
         }
-        return await _userRepo.ChangePasswordAsync(id, password);
+        password = _passwordService.HashPassword(password, out byte[] salt);
+        return await _userRepo.ChangePasswordAsync(id, password, salt);
     }
 
     private AddressCreateDto GetAddress(UserCreateDto userCreateDto, Guid userId)

@@ -13,8 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Order> Orders { get; set; } // table `Orders` -> `orders`
     public DbSet<OrderProduct> OrderedProducts { get; set; } // table `Orders` -> `orders`
-    public DbSet<Review> Reviews { get; set; } // table `Reviews` -> `reviews`
-    public DbSet<ReviewImage> ReviewImages { get; set; } // table `Reviews` -> `reviews`
+    // public DbSet<Review> Reviews { get; set; } // table `Reviews` -> `reviews`
+    // public DbSet<ReviewImage> ReviewImages { get; set; } // table `Reviews` -> `reviews`
 
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -52,9 +52,6 @@ public class AppDbContext : DbContext
             entity.HasMany(u => u.Orders)
                   .WithOne(o => o.User)
                   .HasForeignKey(o => o.UserId);
-            entity.HasMany(u => u.Reviews)
-                  .WithOne(r => r.User)
-                  .HasForeignKey(r => r.UserId);
             entity.HasData(SeedingData.GetUsers());
         });
         // -----------------------------------------------------------------------------------------------
@@ -121,30 +118,30 @@ public class AppDbContext : DbContext
         });
         // -----------------------------------------------------------------------------------------------
 
-        modelBuilder.Entity<Review>(e =>
-        {
-            //Review-OrderedProduct relationship
-            e.HasOne(r => r.OrderedProduct)
-                .WithMany(op => op.Reviews)
-                .HasForeignKey(r => r.OrderedProductId);
+        // modelBuilder.Entity<Review>(e =>
+        // {
+        //     //Review-OrderedProduct relationship
+        //     e.HasOne(r => r.OrderedProduct)
+        //         .WithMany(op => op.Reviews)
+        //         .HasForeignKey(r => r.OrderedProductId);
 
-            //Review-User relationship
-            e.HasOne(u => u.User)
-                .WithMany(u => u.Reviews)
-                .HasForeignKey(u => u.UserId);
+        //     //Review-User relationship
+        //     e.HasOne(u => u.User)
+        //         .WithMany(u => u.Reviews)
+        //         .HasForeignKey(u => u.UserId);
 
-            //Review-ReviewImages relationship
-            e.HasMany(r => r.Images)
-                .WithOne()
-                .HasForeignKey(r => r.ReviewId);
-        });
-        // -----------------------------------------------------------------------------------------------
-        modelBuilder.Entity<ReviewImage>(entity =>
-        {
-            entity.HasOne(ri => ri.Review)
-                  .WithMany(r => r.Images)
-                  .HasForeignKey(ri => ri.ReviewId);
-        });
+        //     //Review-ReviewImages relationship
+        //     e.HasMany(r => r.Images)
+        //         .WithOne()
+        //         .HasForeignKey(r => r.ReviewId);
+        // });
+        // // -----------------------------------------------------------------------------------------------
+        // modelBuilder.Entity<ReviewImage>(entity =>
+        // {
+        //     entity.HasOne(ri => ri.Review)
+        //           .WithMany(r => r.Images)
+        //           .HasForeignKey(ri => ri.ReviewId);
+        // });
 
         base.OnModelCreating(modelBuilder);
     }

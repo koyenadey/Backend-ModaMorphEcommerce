@@ -1,4 +1,5 @@
 using Npgsql;
+using System.Text;
 using ECommWeb.Business.src.ServiceAbstract.AuthServiceAbstract;
 using ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
 using ECommWeb.Business.src.ServiceImplement.EntityServiceImplement;
@@ -12,9 +13,10 @@ using Microsoft.EntityFrameworkCore;
 using Server.Service.src.ServiceImplement.AuthServiceImplement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using ECommWeb.Infrastructure.src;
-using Server.Service.src.ServiceImplement.EntityServiceImplement;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,23 @@ builder.Services.AddDbContext<AppDbContext>
     .UseSnakeCaseNamingConvention()
 );
 
+//Add authorization for Swagger
+builder.Services.AddSwaggerGen(
+    options =>
+    {
+        options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Description = "Bearer token authentication",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Scheme = "Bearer"
+        }
+        );
+
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+    }
+);
+
 // service registration -> automatically create all instances of dependencies
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -51,8 +70,6 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
-builder.Services.AddScoped<IReviewRepo, ReviewRepo>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

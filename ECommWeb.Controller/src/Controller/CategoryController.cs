@@ -22,7 +22,7 @@ public class CategoryController : ControllerBase
     {
         var result = await _categoryServices.GetAllCategoriesAsync(options);
         if (result == null) return NotFound();
-        else return Ok(result);
+        return Ok(result);
     }
 
     [AllowAnonymous]
@@ -31,7 +31,7 @@ public class CategoryController : ControllerBase
     {
         var result = await _categoryServices.GetCategoryById(id);
         if (result == null) return NotFound();
-        else return Ok(result);
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -39,8 +39,8 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult<CategoryReadDTO>> CreateCategoryAsync([FromBody] CategoryCreateDTO category)
     {
         var result = await _categoryServices.CreateCategory(category);
-        if (result == null) return NotFound();
-        else return Ok(result);
+        if (result == null) return BadRequest("Category could not be created");
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -48,16 +48,16 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult<CategoryReadDTO>> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] CategoryUpdateDTO category)
     {
         var result = await _categoryServices.UpdateACategory(id, category);
-        if (result == null) return NotFound();
-        else return Ok(result);
+        if (result == null) return BadRequest("Category could not be updated");
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("api/v1/category/{id}")]
     public async Task<ActionResult<bool>> DeleteCategoryAsync([FromRoute] Guid id)
     {
-        var result = await _categoryServices.DeleteCategory(id);
-        if (result == null) return NotFound();
-        else return Ok(result);
+        var isDeleted = await _categoryServices.DeleteCategory(id);
+        if (!isDeleted) return BadRequest("Category could not be deleted");
+        return Ok(isDeleted);
     }
 }

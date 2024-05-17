@@ -10,7 +10,7 @@ public interface IUserRepo
     Task<User> UpdateUserByIdAsync(User user);
     Task<bool> DeleteUserByIdAsync(Guid id);
     Task<User> CreateUserAsync(User user, Address address);
-    Task<bool> ChangePasswordAsync(Guid userId, string newPassword);
+    Task<bool> ChangePasswordAsync(Guid userId, string newPassword, byte[] salt);
     Task<bool> CheckEmailAsync(string email);
     Task<User> GetUserByCredentialsAsync(UserCredential userCredential);
 

@@ -31,11 +31,7 @@ public class Address : BaseEntity
 
     [StringLength(100, ErrorMessage = "Landmark cannot be longer than 100 characters")]
     public string Landmark { get; set; }
-    // foreign key
     public Guid UserId { get; set; }
-    // navigation
     public User User { get; set; }
-
-    // An adress can have multiple orders
     public IEnumerable<Order> Orders { get; set; }
 }
