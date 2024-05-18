@@ -12,16 +12,19 @@ namespace ECommWeb.Controller.src.Controller;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productServices;
+    private readonly IImageUploadService _imageUploadService;
 
-    public ProductController(IProductService productService)
+    public ProductController(IProductService productService, IImageUploadService imageUploadService)
     {
         _productServices = productService;
+        _imageUploadService = imageUploadService;
     }
 
     [HttpGet("api/v1/products")]
     public async Task<ActionResult<IEnumerable<ProductReadDTO>>> GetAllProductsAsync([FromQuery] QueryOptions options)
     {
         var products = await _productServices.GetAllProductsAsync(options);
+
         if (products == null) return NotFound("Results could not be fetched");
         return Ok(products);
     }
@@ -53,9 +56,33 @@ public class ProductController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost("api/v1/product")]
-    public async Task<ActionResult<ProductReadDTO>> CreateProductAsync([FromBody] ProductCreateDTO product)
+    public async Task<ActionResult<ProductReadDTO>> CreateProductAsync([FromForm] ProductCreatePayloadDTO productPayload)
     {
+
+        var files = productPayload.Images;
+
+        // Upload images (if any)
+        var imageUrls = await _imageUploadService.Upload(files);
+
+        foreach (var imageUrl in imageUrls)
+        {
+            Console.WriteLine("ABCD" + imageUrl);
+        }
+
+        if (imageUrls == null) return BadRequest("Images could not be uploaded");
+
+        var product = new ProductCreateDTO
+        {
+            Name = productPayload.Name,
+            Description = productPayload.Description,
+            Price = productPayload.Price,
+            Inventory = productPayload.Inventory,
+            CategoryId = productPayload.CategoryId,
+            Images = imageUrls
+        };
+
         var createdProduct = await _productServices.CreateProduct(product);
+
         if (createdProduct == null) return BadRequest("Product could not be created");
         return Ok(createdProduct);
     }

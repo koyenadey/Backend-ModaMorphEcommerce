@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
+using ECommWeb.Business.src.ServiceAbstract.AuthServiceAbstract;
+using ECommWeb.Core.src.ValueObject;
 
 namespace ECommWeb.Controller.src.Controller;
 
@@ -14,11 +16,13 @@ public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IEmailService _emailService;
 
-    public OrderController(IOrderService orderService, IHttpContextAccessor httpContextAccessor)
+    public OrderController(IOrderService orderService, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
     {
         _orderService = orderService;
         _httpContextAccessor = httpContextAccessor;
+        _emailService = emailService;
     }
 
     [Authorize] //means authenticate
@@ -61,6 +65,10 @@ public class OrderController : ControllerBase
     {
         var order = await _orderService.CreateOrderAsync(orderDto);
         if (order == null) return BadRequest("Order couldnot be created");
+        var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
+        var userEmail = userClaims;
+        if (userEmail != null)
+            _emailService.SendEmail(userEmail, $"Order {order.OrderId} is {Status.processing}", "The order has been placeed successfully");
         return Ok(order);
     }
 

@@ -74,6 +74,8 @@ builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IImageUploadService, CloudinaryImageUploadService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<ExceptionHanlerMiddleware>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

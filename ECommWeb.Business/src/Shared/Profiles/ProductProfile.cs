@@ -98,7 +98,7 @@ public class ProductProfile : Profile
                 dest => dest.Images,
                 opt => opt.MapFrom(src => src.Images.Select(image => new ProductImage
                 {
-                    ProductImageUrl = image.ImageUrl
+                    ProductImageUrl = image
                 }))
             )
             .ForMember(

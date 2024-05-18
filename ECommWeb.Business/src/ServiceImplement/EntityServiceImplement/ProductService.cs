@@ -62,6 +62,7 @@ public class ProductService : IProductService
     public async Task<ProductReadDTO> CreateProduct(ProductCreateDTO product)
     {
         var productToCreate = _mapper.Map<Product>(product);
+        //new ProductCreateDTO().Transform(product);
         //_mapper.Map<ProductCreateDTO, Product>(product);
         var result = await _productRepo.CreateOneAsync(productToCreate);
         return _mapper.Map<ProductReadDTO>(result);
