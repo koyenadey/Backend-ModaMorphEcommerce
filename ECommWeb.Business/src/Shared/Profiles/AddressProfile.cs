@@ -6,12 +6,6 @@ namespace ECommWeb.Business.src.Shared.Profiles;
 
 public class AddressProfile : Profile
 {
-    // Define a method to handle the mapping logic for ProductName
-    // public string MapUserName(Address src)
-    // {
-    //     Console.WriteLine($"User: {src.User.UserName}");
-    //     return src.User.UserName;
-    // }
     public AddressProfile()
     {
         //Profile for CreateAddressDto
@@ -56,16 +50,21 @@ public class AddressProfile : Profile
                 opt => opt.MapFrom(src => DateTime.Now)
             );
 
-        //Profile for ReadAddressDto
-        CreateMap<Address, AddressReadDto>()
-            .IncludeMembers(src => src.User)
+        CreateMap<User, AddressReadDtoWithUser>()
             .ForMember(
-                dest => dest.Username,
-               opt => opt.MapFrom(src => src.User.UserName)
+                dest => dest.UserName,
+                opt => opt.MapFrom(src => src.UserName)
             )
             .ForMember(
-                dest => dest.EmailAddress,
-                opt => opt.MapFrom(src => src.User.Email)
+                dest => dest.Email,
+                opt => opt.MapFrom(src => src.Email)
+            );
+
+        //Profile for ReadAddressDto
+        CreateMap<Address, AddressReadDto>()
+            .ForMember(
+                dest => dest.User,
+                opt => opt.MapFrom(src => src.User)
             )
             .ForMember(
                 dest => dest.AddressLine,
@@ -90,50 +89,21 @@ public class AddressProfile : Profile
             .ForMember(
                 dest => dest.Landmark,
                 opt => opt.MapFrom(src => src.Landmark ?? "No landmark listed")
-            )
-            .ForMember(
-                dest => dest.UserId,
-                opt => opt.MapFrom(src => src.UserId)
             );
 
-
-        CreateMap<User, AddressReadDto>()
-        .ForMember(
-            dest => dest.Username,
-            opt => opt.MapFrom(src => src.UserName)
-        )
-        .ForMember(
-            dest => dest.EmailAddress,
-             opt => opt.MapFrom(src => src.Email)
-        )
-        .ForMember(
-            dest => dest.AddressLine,
-             opt => opt.MapFrom(src => src.Addresses.FirstOrDefault(a => a.Id == src.DefaultAddressId).AddressLine)
-        ) // Example
-        .ForMember(
-            dest => dest.Street,
-            opt => opt.MapFrom(src => "User's Street")
-        ) // Example
-        .ForMember(
-            dest => dest.City,
-            opt => opt.MapFrom(src => "User's City")
-        ) // Example
-        .ForMember(
-            dest => dest.Country,
-            opt => opt.MapFrom(src => "User's Country")
-        ) // Example
-        .ForMember(
-            dest => dest.Postcode,
-            opt => opt.MapFrom(src => "User's Postcode")
-        ) // Example
-        .ForMember(
-            dest => dest.PhoneNumber,
-            opt => opt.MapFrom(src => "User's Phone Number")
-        ) // Example
-        .ForMember(
-            dest => dest.Landmark,
-            opt => opt.MapFrom(src => "User's Landmark")
-        ); // Example
+        CreateMap<User, AddressReadDtoWithUser>()
+            .ForMember(
+                dest => dest.Id,
+                opt => opt.MapFrom(src => src.Id)
+            )
+            .ForMember(
+                dest => dest.UserName,
+                opt => opt.MapFrom(src => src.UserName)
+            )
+            .ForMember(
+                dest => dest.Email,
+                opt => opt.MapFrom(src => src.Email)
+            );
     }
 
 

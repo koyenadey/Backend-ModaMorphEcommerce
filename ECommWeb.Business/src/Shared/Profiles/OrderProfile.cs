@@ -31,9 +31,9 @@ public class OrderProfile : Profile
             )
             .ForMember(
                 dest => dest.DateOfDelivery,
-                opt => opt.MapFrom(src => src.DateOfDelivery)
+                opt => opt.MapFrom(src => src.DateOfDelivery ?? DateTime.Now.AddDays(4))
             )
-            .ForMember(
+            .ForPath(
                 dest => dest.Address,
                 opt => opt.MapFrom(src => src.Address)
             )

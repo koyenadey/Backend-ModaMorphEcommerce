@@ -39,6 +39,7 @@ public class AddressController : ControllerBase
         var userId = Guid.Parse(userIdClaim);
 
         return await _addressService.GetAddressesByUserAsync(userId, options);
+
     }
 
 
@@ -54,7 +55,7 @@ public class AddressController : ControllerBase
 
         var address = await _addressService.GetAddressByIdAsync(id);
 
-        if (address.UserId != loggedInUserId) return Unauthorized("You are not authorized to access this address!");
+        if (address.User.Id != loggedInUserId) return Unauthorized("You are not authorized to access this address!");
 
         return Ok(address);
     }
@@ -82,7 +83,7 @@ public class AddressController : ControllerBase
         var loggedInUserId = Guid.Parse(userClaims);
         var addressToBeDeleted = await _addressService.GetAddressByIdAsync(id);
 
-        if (loggedInUserId != addressToBeDeleted.UserId) return Unauthorized("You are not authorized to access this address!");
+        if (loggedInUserId != addressToBeDeleted.User.Id) return Unauthorized("You are not authorized to access this address!");
 
         return Ok(await _addressService.DeleteAddressByIdAsync(id));
     }
@@ -97,7 +98,7 @@ public class AddressController : ControllerBase
 
         var requestedAddress = await _addressService.GetAddressByIdAsync(id);
 
-        if (requestedAddress.UserId != Guid.Parse(userClaims)) return Unauthorized("Sorry, this address does not belongs to you");
+        if (requestedAddress.User.Id != Guid.Parse(userClaims)) return Unauthorized("Sorry, this address does not belongs to you");
 
         return Ok(await _addressService.UpdateAddressByIdAsync(id, address));
     }
@@ -114,7 +115,7 @@ public class AddressController : ControllerBase
 
         var addressRequested = await _addressService.GetAddressByIdAsync(id);
 
-        if (addressRequested.UserId != userId) return Unauthorized("Sorry this address does not belongs to you"); ;
+        if (addressRequested.User.Id != userId) return Unauthorized("Sorry this address does not belongs to you"); ;
 
         return Ok(await _addressService.SetDefaultAddressAsync(userId, id));
     }

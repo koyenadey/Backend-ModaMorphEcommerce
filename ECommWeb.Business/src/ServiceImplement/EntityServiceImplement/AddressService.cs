@@ -46,20 +46,20 @@ public class AddressService : IAddressService
 
         if (addressFound == null) throw new ResourceNotFoundException("No Address found by this id.");
 
-        return new AddressReadDto().MapToAddressReadDto(addressFound);
+        //return new AddressReadDto().MapToAddressReadDto(addressFound);
 
-        //return _mapper.Map<AddressReadDto>(addressFound);
+        return _mapper.Map<AddressReadDto>(addressFound);
     }
 
     public async Task<IEnumerable<AddressReadDto>> GetAddressesByUserAsync(Guid userId, QueryOptions? options)
     {
         if (userId == Guid.Empty) throw new ValidationException("Id is empty");
-        //var user = await _userRepo.GetUserByIdAsync(userId);
+
         var addresses = await _addressRepo.GetAddressesByUserAsync(userId, options);
 
-        // Ensure the mapping result is not null and contains data
-        return addresses.Select(a => new AddressReadDto().MapToAddressReadDto(a));
-        //return _mapper.Map<IEnumerable<AddressReadDto>>(addresses);
+        Console.WriteLine($"Address retrieved from service : UserName: {addresses.ToList()[0].User.UserName} Email: {addresses.ToList()[0].User.Email} Street: {addresses.ToList()[0].Street}");
+
+        return _mapper.Map<IEnumerable<AddressReadDto>>(addresses);
     }
 
 
@@ -69,8 +69,8 @@ public class AddressService : IAddressService
         if (defaultAddress == null)
             throw new ResourceNotFoundException("The user doesn't have a default address.");
 
-        return new AddressReadDto().MapToAddressReadDto(defaultAddress);
-        //return _mapper.Map<AddressReadDto>(defaultAddress);
+        //return new AddressReadDto().MapToAddressReadDto(defaultAddress);
+        return _mapper.Map<AddressReadDto>(defaultAddress);
     }
 
     public async Task<bool> SetDefaultAddressAsync(Guid userId, Guid addressId)
@@ -97,8 +97,8 @@ public class AddressService : IAddressService
         if (updatedAddress == null)
             throw new InvalidOperationException("Updating address failed.");
 
-        return new AddressReadDto().MapToAddressReadDto(updatedAddress);
-        //return _mapper.Map<AddressReadDto>(updatedAddress);
+        //return new AddressReadDto().MapToAddressReadDto(updatedAddress);
+        return _mapper.Map<AddressReadDto>(updatedAddress);
     }
     private Address GetUpdatedAddress(Address addressToUpdate, AddressUpdateDto updateAddressDto)
     {
