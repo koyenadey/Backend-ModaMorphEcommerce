@@ -107,8 +107,10 @@ public class UserRepo : IUserRepo
         }
 
         // Apply pagination
+        var pgNo = options.PageNo;
+        var pgSize = options.PageSize;
         int skipCount = options.PageSize * options.PageNo;
-        query = query.Skip(skipCount).Take(options.PageSize);
+        query = query.Skip((pgNo - 1) * pgSize).Take(pgSize);
 
         return await query.ToListAsync();
     }
@@ -128,7 +130,7 @@ public class UserRepo : IUserRepo
         }
 
         userToUpdate.UserName = UserUpdateInfo.UserName;
-        userToUpdate.Password = UserUpdateInfo.Password;
+        userToUpdate.Avatar = UserUpdateInfo.Avatar;
         // Or -- ???
         _context.Users.Update(UserUpdateInfo);
 

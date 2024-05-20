@@ -94,11 +94,10 @@ public class UserService : IUserService
 
         if (userToUpdate == null) throw new ResourceNotFoundException("No user found to update.");
         if (user.UserName == null) throw new ValidationException("User name is required.");
-        if (user.Password == null) throw new ValidationException("Password is required.");
+        if (user.Avatar == null) throw new ValidationException("Avatar is required.");
 
         userToUpdate.UserName = user.UserName;
-        userToUpdate.Password = _passwordService.HashPassword(user.Password, out byte[] salt);
-        userToUpdate.Salt = salt;
+        userToUpdate.Avatar = user.Avatar;
 
         var updatedUser = await _userRepo.UpdateUserByIdAsync(userToUpdate);
         if (updatedUser == null)

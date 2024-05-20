@@ -33,7 +33,7 @@ public class AuthService : IAuthService
         throw CustomException.NotFoundException("User not found");
     }
 
-    public async Task<string> Login(UserCredential credential)
+    public async Task<AuthLoginReadDto> Login(UserCredential credential)
     {
         var foundByEmail = await _userRepo.GetUserByCredentialsAsync(credential);
         if (foundByEmail is null)
@@ -44,7 +44,11 @@ public class AuthService : IAuthService
         var isPasswordMatch = _passwordService.VerifyPassword(credential.Password, foundByEmail.Password, foundByEmail.Salt);
         if (isPasswordMatch)
         {
-            return _tokenService.GetToken(foundByEmail);
+            var token = _tokenService.GetToken(foundByEmail);
+            return new AuthLoginReadDto()
+            {
+                RefreshToken = token,
+            };
         }
         throw CustomException.UnauthorizedException("Password incorrect");
     }

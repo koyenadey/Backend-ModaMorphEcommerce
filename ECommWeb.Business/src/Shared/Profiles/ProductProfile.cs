@@ -52,7 +52,8 @@ public class ProductProfile : Profile
                 .ForMember(
                     dest => dest.Images,
                     opt => opt.MapFrom(
-                        src => src.Images.Where(i => i.ProductId == src.Id).Select(
+                        src => src.Images.Where(i => i.ProductId == src.Id)
+                        .Select(
                             i => new ProductImageReadDTO
                             {
                                 ProductId = i.ProductId,

@@ -39,6 +39,12 @@ public class ProductService : IProductService
         }
     }
 
+
+    public async Task<int> GetProductsCount()
+    {
+        return await _productRepo.GetProductsCount();
+    }
+
     public async Task<IEnumerable<ProductReadDTO>> GetAllProductsByCategoryAsync(Guid categoryId, QueryOptions options)
     {
         var foundCategory = await _categoryRepo.GetOneByIdAsync(categoryId);

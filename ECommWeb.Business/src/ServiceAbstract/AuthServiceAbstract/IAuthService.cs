@@ -9,6 +9,6 @@ namespace ECommWeb.Business.src.ServiceAbstract.AuthServiceAbstract;
 // }
 public interface IAuthService
 {
-    public Task<string> Login(UserCredential credential);
+    public Task<AuthLoginReadDto> Login(UserCredential credential);
     public Task<UserReadDto> GetCurrentProfile(Guid id);
 }

@@ -23,10 +23,12 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("api/v1/auth/login")]
-    public async Task<string> LoginAsync([FromBody] UserCredential userCredential)
+    public async Task<ActionResult<AuthLoginReadDto>> LoginAsync([FromBody] UserCredential userCredential)
     {
         // return await _authService.LoginAsync(userCredential);
-        return await _authService.Login(userCredential);
+        var token = await _authService.Login(userCredential);
+        if (token == null) return BadRequest("Could not generate token");
+        return Ok(token);
     }
 
     [Authorize]

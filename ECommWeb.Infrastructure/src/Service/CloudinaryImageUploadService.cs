@@ -44,4 +44,24 @@ public class CloudinaryImageUploadService : IImageUploadService
         }
         return imageUrls;
     }
+
+    public async Task<string> Upload(IFormFile file)
+    {
+        using var memoryStream = new MemoryStream();
+        await file.CopyToAsync(memoryStream);
+        memoryStream.Position = 0;
+        var uploadParams = new ImageUploadParams()
+        {
+            File = new FileDescription(file.FileName, memoryStream),
+            PublicId = Guid.NewGuid().ToString()
+        };
+
+        var result = await _cloudinary.UploadAsync(uploadParams);
+        if (result.Error != null)
+            throw new Exception($"Cloudinary error occured: {result.Error.Message}");
+
+        var imageUrl = result.SecureUrl.ToString();
+
+        return imageUrl;
+    }
 }

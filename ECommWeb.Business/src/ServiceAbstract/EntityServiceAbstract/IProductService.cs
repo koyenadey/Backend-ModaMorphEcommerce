@@ -6,6 +6,7 @@ namespace ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
 
 public interface IProductService
 {
+    Task<int> GetProductsCount();
     Task<IEnumerable<ProductReadDTO>> GetAllProductsAsync(QueryOptions options);
     Task<ProductReadDTO> GetProductById(Guid id);
     Task<ProductReadDTO> CreateProduct(ProductCreateDTO prod);

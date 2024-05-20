@@ -5,6 +5,7 @@ namespace ECommWeb.Core.src.RepoAbstract;
 
 public interface IProductRepo : IBaseRepo<Product>
 {
+    Task<int> GetProductsCount();
     IEnumerable<Product> GetByCategory(Guid categoryId, QueryOptions options);
     IEnumerable<Product> GetMostPurchased(int topNumber);
 }

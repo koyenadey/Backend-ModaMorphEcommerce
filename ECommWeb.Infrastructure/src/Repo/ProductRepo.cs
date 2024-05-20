@@ -17,6 +17,12 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
         //_orderProducts = context.OrderedProducts;
     }
 
+    public async Task<int> GetProductsCount()
+    {
+        return await _context.Products.CountAsync();
+    }
+
+
     public override async Task<IEnumerable<Product>> GetAllAsync(QueryOptions options)
     {
         var allData = _data.Include("Images").Include("Category").Skip(options.PageNo).Take(options.PageSize);

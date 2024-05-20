@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using ECommWeb.Business.src.Shared;
 using System.Runtime.CompilerServices;
+using ECommWeb.Core.src.ValueObject;
 
 
 namespace Server.Controller.src.Controller
@@ -18,13 +19,15 @@ namespace Server.Controller.src.Controller
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IImageUploadService _imageUploadService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public UserController(IUserService userService, IHttpContextAccessor httpContextAccessor)
+        public UserController(IUserService userService, IHttpContextAccessor httpContextAccessor, IImageUploadService imageUploadService)
         {
             _userService = userService;
             _httpContextAccessor = httpContextAccessor;
+            _imageUploadService = imageUploadService;
 
         }
 
@@ -72,8 +75,28 @@ namespace Server.Controller.src.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserReadDto>> CreateCustomerAsync([FromBody] UserCreateDto user)
+        public async Task<ActionResult<UserReadDto>> CreateCustomerAsync([FromForm] UserCreatePayloadDto userPayload)
         {
+            var avatar = userPayload.Avatar;
+
+            var avatarUrl = _imageUploadService.Upload(avatar).ToString();
+
+            if (avatarUrl == null) return BadRequest("Couldnt upload the avatar.");
+
+            var user = new UserCreateDto
+            {
+                UserName = userPayload.UserName,
+                Email = userPayload.Email,
+                Password = userPayload.Password,
+                Avatar = avatarUrl,
+                AddresLine1 = userPayload.AddresLine1,
+                Street = userPayload.Street,
+                City = userPayload.City,
+                Country = userPayload.Country,
+                Postcode = userPayload.Postcode,
+                PhoneNumber = userPayload.PhoneNumber,
+                Landmark = userPayload.Landmark,
+            };
             var createdUser = await _userService.CreateCustomerAsync(user);
             return CreatedAtAction("CreateCustomer", new { createdUser.Id }, createdUser);
         }
@@ -95,15 +118,31 @@ namespace Server.Controller.src.Controller
 
         [Authorize]
         [HttpPatch("{id}")]
-        public async Task<ActionResult<UserReadDto>> UpdateUserByIdAsync([FromBody] UserUpdateDto user, [FromRoute] Guid id)
+        public async Task<ActionResult<UserReadDto>> UpdateUserByIdAsync([FromForm] UserUpdatePayloadDto userPayload, [FromRoute] Guid id)
         {
-            var userClaims = (_httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new InvalidOperationException("Please login to use this facility!");
+            var userRoleClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userIdClaims = (_httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new InvalidOperationException("Please login to use this facility!");
 
-            var loggedInUserId = Guid.Parse(userClaims);
+            var loggedInUserRole = userRoleClaims;
+            var loggedInUserId = Guid.Parse(userIdClaims);
 
-            if (loggedInUserId != id) return Unauthorized("The user profile you are trying to update, does not belongs to you...");
+            if (loggedInUserRole != Role.Admin.ToString() && loggedInUserId != id)
+                return Unauthorized("The user profile you are trying to update, does not belongs to you...");
 
-            return Ok(await _userService.UpdateUserByIdAsync(id, user));
+            var avatar = userPayload.Avatar;
+
+            var avatarUrl = avatar != null ? await _imageUploadService.Upload(avatar) : $"{userPayload.UserName}.png";
+
+            if (avatarUrl == null) return BadRequest("Couldnt upload the avatar.");
+
+            var user = new UserUpdateDto
+            {
+                UserName = userPayload.UserName,
+                Avatar = avatarUrl,
+            };
+
+            var updatedUser = await _userService.UpdateUserByIdAsync(id, user);
+            return Ok(updatedUser);
         }
 
 

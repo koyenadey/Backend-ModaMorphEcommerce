@@ -20,6 +20,16 @@ public class ProductController : ControllerBase
         _imageUploadService = imageUploadService;
     }
 
+    [HttpGet("api/v1/products/meta")]
+    public async Task<ActionResult<int>> GetProductsCount()
+    {
+        var productCount = await _productServices.GetProductsCount();
+
+        if (productCount == 0) return NotFound("Results could not be fetched");
+
+        return Ok(productCount);
+    }
+
     [HttpGet("api/v1/products")]
     public async Task<ActionResult<IEnumerable<ProductReadDTO>>> GetAllProductsAsync([FromQuery] QueryOptions options)
     {
@@ -63,11 +73,6 @@ public class ProductController : ControllerBase
 
         // Upload images (if any)
         var imageUrls = await _imageUploadService.Upload(files);
-
-        foreach (var imageUrl in imageUrls)
-        {
-            Console.WriteLine("ABCD" + imageUrl);
-        }
 
         if (imageUrls == null) return BadRequest("Images could not be uploaded");
 
