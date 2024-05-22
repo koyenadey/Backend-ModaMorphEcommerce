@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using ECommWeb.Core.src.Common;
 using ECommWeb.Business.src.DTO;
 using ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
-using ECommWeb.Business.src.Shared;
-using System.Runtime.CompilerServices;
 using ECommWeb.Core.src.ValueObject;
 
 
@@ -29,6 +25,13 @@ namespace Server.Controller.src.Controller
             _httpContextAccessor = httpContextAccessor;
             _imageUploadService = imageUploadService;
 
+        }
+
+        [HttpPost("email-exists")]
+        public async Task<ActionResult<bool>> CheckIfEmailExists([FromBody] string email)
+        {
+            var result = await _userService.CheckEmailAsync(email);
+            return Ok(result);
         }
 
         [Authorize(Roles = "Admin")]
@@ -79,7 +82,9 @@ namespace Server.Controller.src.Controller
         {
             var avatar = userPayload.Avatar;
 
-            var avatarUrl = _imageUploadService.Upload(avatar).ToString();
+            var avatarData = await _imageUploadService.Upload(avatar);
+
+            var avatarUrl = avatarData;
 
             if (avatarUrl == null) return BadRequest("Couldnt upload the avatar.");
 

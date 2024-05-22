@@ -145,6 +145,14 @@ public class UserRepo : IUserRepo
         var foundUser = await _context.Users.FirstOrDefaultAsync(user => user.Email == userCredential.Email);
         return foundUser;
     }
+
+    public async Task<bool> CheckIfEmailExists(string email)
+    {
+        var result = await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+        if (result == null) return false;
+        return true;
+
+    }
 }
 
 

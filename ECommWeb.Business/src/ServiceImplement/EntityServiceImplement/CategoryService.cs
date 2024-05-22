@@ -17,6 +17,11 @@ namespace Server.Service.src.ServiceImplement.AuthServiceImplement
             _categoryRepo = categoryRepo;
             _mapper = mapper;
         }
+
+        public Task<int> GetProductsCount()
+        {
+            throw new NotImplementedException();
+        }
         public async Task<IEnumerable<CategoryReadDTO>> GetAllCategoriesAsync(QueryOptions options)
         {
             var categories = await _categoryRepo.GetAllAsync(options);
@@ -69,6 +74,5 @@ namespace Server.Service.src.ServiceImplement.AuthServiceImplement
                 return false;
             }
         }
-
     }
 }

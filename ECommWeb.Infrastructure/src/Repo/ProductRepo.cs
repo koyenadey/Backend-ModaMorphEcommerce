@@ -22,10 +22,18 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
         return await _context.Products.CountAsync();
     }
 
+    public async Task<int> GetProductsCountByCategory(Guid categoryId)
+    {
+        return await _context.Products.Where(p => p.CategoryId == categoryId).CountAsync();
+
+    }
 
     public override async Task<IEnumerable<Product>> GetAllAsync(QueryOptions options)
     {
-        var allData = _data.Include("Images").Include("Category").Skip(options.PageNo).Take(options.PageSize);
+        var pgNo = options.PageNo;
+        var pgSize = options.PageSize;
+        var allData = _data.Include("Images").Include("Category").Skip((pgNo - 1) * pgSize).Take(pgSize);
+        //var allData = _data.Include("Images").Include("Category").Skip(options.PageNo).Take(options.PageSize);
 
         if (options.sortType == SortType.byTitle && options.sortOrder == SortOrder.asc)
         {
@@ -132,15 +140,13 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
         return null;
     }
 
-    public override async Task<bool> DeleteOneByIdAsync(Product product)
+    public override async Task<Product> DeleteOneByIdAsync(Product product)
     {
         var productFound = await _data.FirstOrDefaultAsync(p => p.Id == product.Id);
-        if (productFound == null) return false;
-        else
-        {
-            _data.Remove(productFound);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+
+        _data.Remove(productFound);
+        await _context.SaveChangesAsync();
+        return product;
+
     }
 }

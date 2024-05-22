@@ -24,11 +24,11 @@ public class BaseRepo<T> : IBaseRepo<T> where T : BaseEntity
         return createObject;
     }
 
-    public virtual Task<bool> DeleteOneByIdAsync(T deleteObject)
+    public virtual Task<T> DeleteOneByIdAsync(T deleteObject)
     {
         _data.Remove(deleteObject);
         _context.SaveChangesAsync();
-        return Task.FromResult(true);
+        return Task.FromResult(deleteObject);
     }
 
     public virtual async Task<IEnumerable<T>> GetAllAsync(QueryOptions options)

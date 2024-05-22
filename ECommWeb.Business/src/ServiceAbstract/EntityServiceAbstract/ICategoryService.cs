@@ -5,6 +5,7 @@ namespace ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
 
 public interface ICategoryService
 {
+    Task<int> GetProductsCount();
     public Task<IEnumerable<CategoryReadDTO>> GetAllCategoriesAsync(QueryOptions options);
     public Task<CategoryReadDTO> GetCategoryById(Guid id);
     public Task<CategoryReadDTO> CreateCategory(CategoryCreateDTO category);

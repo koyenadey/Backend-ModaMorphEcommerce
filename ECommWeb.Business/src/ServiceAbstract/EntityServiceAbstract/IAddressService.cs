@@ -7,7 +7,6 @@ public interface IAddressService
 {
     Task<AddressReadDto> GetAddressByIdAsync(Guid id);
     Task<IEnumerable<AddressReadDto>> GetAddressesByUserAsync(Guid userId, QueryOptions? options);
-
     Task<AddressReadDto> UpdateAddressByIdAsync(Guid addressId, AddressUpdateDto address);
     Task<Guid> DeleteAddressByIdAsync(Guid id);
     Task<AddressReadDto> CreateAddressAsync(AddressCreateDto address);

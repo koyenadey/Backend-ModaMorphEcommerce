@@ -53,16 +53,14 @@ namespace ECommWeb.Infrastructure.src.Repo
             }
         }
 
-        public override async Task<bool> DeleteOneByIdAsync(Category category)
+        public override async Task<Category> DeleteOneByIdAsync(Category category)
         {
             var categoryFound = await _data.FirstOrDefaultAsync(c => c.Id == category.Id);
-            if (categoryFound == null) return false;
-            else
-            {
-                _data.Remove(categoryFound);
-                await _context.SaveChangesAsync();
-                return true;
-            }
+
+            _data.Remove(categoryFound);
+            await _context.SaveChangesAsync();
+            return category;
+
         }
     }
 }

@@ -16,6 +16,7 @@ public class CategoryController : ControllerBase
         _categoryServices = categoryService;
     }
 
+
     [AllowAnonymous]
     [HttpGet("api/v1/categories")]
     public async Task<ActionResult<IEnumerable<CategoryReadDTO>>> GetAllCategoriesAsync([FromQuery] QueryOptions options)

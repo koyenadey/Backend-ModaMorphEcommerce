@@ -45,6 +45,15 @@ public class ProductService : IProductService
         return await _productRepo.GetProductsCount();
     }
 
+    public Task<int> GetProductsCountByCategory(Guid categoryId)
+    {
+        if (categoryId != Guid.Empty)
+        {
+            return _productRepo.GetProductsCountByCategory(categoryId);
+        }
+        else throw new ValidationException("Category Id is empty");
+    }
+
     public async Task<IEnumerable<ProductReadDTO>> GetAllProductsByCategoryAsync(Guid categoryId, QueryOptions options)
     {
         var foundCategory = await _categoryRepo.GetOneByIdAsync(categoryId);
@@ -92,17 +101,22 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<bool> DeleteProduct(Guid id)
+    public async Task<ProductReadDTO> DeleteProduct(Guid id)
     {
         var foundItem = await _productRepo.GetOneByIdAsync(id);
         if (foundItem is not null)
         {
-            await _productRepo.DeleteOneByIdAsync(foundItem);
-            return true;
+            var productDeleted = await _productRepo.DeleteOneByIdAsync(foundItem);
+            return _mapper.Map<ProductReadDTO>(productDeleted);
         }
         else
         {
-            return false;
+            throw CustomException.NotFoundException("Id not found");
         }
+    }
+
+    public Task<bool> CheckIfEmailExists(string email)
+    {
+        throw new NotImplementedException();
     }
 }

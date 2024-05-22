@@ -30,6 +30,14 @@ public class ProductController : ControllerBase
         return Ok(productCount);
     }
 
+    [HttpGet("api/v1/products/category/{id}/meta")]
+    public async Task<ActionResult<int>> GetProductsCountByCategory([FromRoute] Guid id)
+    {
+        var result = await _productServices.GetProductsCountByCategory(id);
+        if (result != 0) return Ok(result);
+        return NotFound("Results could not be fetched");
+    }
+
     [HttpGet("api/v1/products")]
     public async Task<ActionResult<IEnumerable<ProductReadDTO>>> GetAllProductsAsync([FromQuery] QueryOptions options)
     {
@@ -103,10 +111,10 @@ public class ProductController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("api/v1/product/{id}")]
-    public async Task<ActionResult<bool>> DeleteProductAsync([FromRoute] Guid id)
+    public async Task<ActionResult<ProductReadDTO>> DeleteProductAsync([FromRoute] Guid id)
     {
-        var isDeleted = await _productServices.DeleteProduct(id);
-        if (!isDeleted) return BadRequest("Product could not be deleted");
-        return Ok(isDeleted);
+        var productDeleted = await _productServices.DeleteProduct(id);
+        if (productDeleted is null) return BadRequest("Product could not be deleted");
+        return Ok(productDeleted);
     }
 }
