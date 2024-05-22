@@ -27,15 +27,15 @@ public class AddressService : IAddressService
         return _mapper.Map<AddressReadDto>(addedAddress);
     }
 
-    public async Task<bool> DeleteAddressByIdAsync(Guid id)
+    public async Task<Guid> DeleteAddressByIdAsync(Guid id)
     {
         if (id == Guid.Empty) throw new ValidationException("Id is empty");
 
-        var isDeleted = await _addressRepo.DeleteAddressByIdAsync(id);
+        var deletedId = await _addressRepo.DeleteAddressByIdAsync(id);
 
-        if (!isDeleted) throw new ResourceNotFoundException("Address is not found.");
+        if (deletedId == Guid.Empty) throw new ResourceNotFoundException("Address is not found.");
 
-        return true;
+        return id;
     }
 
     public async Task<AddressReadDto> GetAddressByIdAsync(Guid id)
@@ -45,8 +45,6 @@ public class AddressService : IAddressService
         var addressFound = await _addressRepo.GetAddressByIdAsync(id);
 
         if (addressFound == null) throw new ResourceNotFoundException("No Address found by this id.");
-
-        //return new AddressReadDto().MapToAddressReadDto(addressFound);
 
         return _mapper.Map<AddressReadDto>(addressFound);
     }

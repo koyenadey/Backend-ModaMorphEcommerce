@@ -7,6 +7,7 @@ using ECommWeb.Business.src.DTO;
 using ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
+using ECommWeb.Core.src.ValueObject;
 
 namespace ECommWeb.Controller.src.Controller;
 
@@ -39,6 +40,18 @@ public class AddressController : ControllerBase
         var userId = Guid.Parse(userIdClaim);
 
         return await _addressService.GetAddressesByUserAsync(userId, options);
+
+    }
+    [Authorize]
+    [HttpGet("user/{id}")] // define endpoint: /addresses?
+    public async Task<IEnumerable<AddressReadDto>> GetAddressesByUserIdAsync([FromRoute] Guid id, QueryOptions? queryOptions)
+    {
+        var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim == null) throw new InvalidOperationException("Please login to use this facility!");
+
+
+        return await _addressService.GetAddressesByUserAsync(id, queryOptions);
 
     }
 
@@ -93,19 +106,22 @@ public class AddressController : ControllerBase
     [HttpPatch("{id}")]
     public async Task<ActionResult<AddressReadDto>> UpdateAddressByIdAsync([FromBody] AddressUpdateDto address, [FromRoute] Guid id)
     {
-        var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userClaims == null) return BadRequest("Please login to use this facility!");
+        var userClaimsId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userClaimsRole = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+        if (userClaimsId == null) return BadRequest("Please login to use this facility!");
+
 
         var requestedAddress = await _addressService.GetAddressByIdAsync(id);
 
-        if (requestedAddress.User.Id != Guid.Parse(userClaims)) return Unauthorized("Sorry, this address does not belongs to you");
+        if (userClaimsRole != Role.Admin.ToString() && requestedAddress.User.Id != Guid.Parse(userClaimsId)) return Unauthorized("Sorry, this address does not belongs to you");
+
 
         return Ok(await _addressService.UpdateAddressByIdAsync(id, address));
     }
 
 
     [Authorize]
-    [HttpPatch("{id}/set_default")]
+    [HttpPatch("{id}/setdefault")]
     public async Task<ActionResult<bool>> SetDefaultAddressAsync([FromRoute] Guid id)
     {
         var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -129,5 +145,17 @@ public class AddressController : ControllerBase
         if (userClaims == null) return BadRequest("Please login to use this facility!");//unauthenticated
         var userId = Guid.Parse(userClaims);
         return Ok(await _addressService.GetDefaultAddressAsync(userId));
+    }
+
+    [Authorize]
+    [HttpGet("default/{id}")]
+    public async Task<ActionResult<Guid>> GetDefaultAddressIdByUserIdAsync([FromRoute] Guid id)
+    {
+        var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userClaims == null) return BadRequest("Please login to use this facility!");//unauthenticated
+
+        var defaultAddress = await _addressService.GetDefaultAddressAsync(id);
+        if (defaultAddress == null) return NotFound("No default address found");
+        return Ok(defaultAddress.Id);
     }
 }

@@ -23,18 +23,18 @@ public class AddressRepo : IAddressRepo
                             .FirstAsync(a => a.Id == address.Id);
     }
 
-    public async Task<bool> DeleteAddressByIdAsync(Guid id)
+    public async Task<Guid> DeleteAddressByIdAsync(Guid id)
     {
         var adrToDelete = await GetAddressByIdAsync(id);
         if (adrToDelete != null)
         {
             _context.Addresses.Remove(adrToDelete);
             await _context.SaveChangesAsync();
-            return true; // Return true indicating successful deletion
+            return id; // Return true indicating successful deletion
         }
         else
         {
-            return false; // Return false indicating user not found or deletion failed
+            return Guid.Empty; // Return false indicating user not found or deletion failed
         }
     }
 
