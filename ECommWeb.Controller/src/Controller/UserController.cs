@@ -82,9 +82,14 @@ namespace Server.Controller.src.Controller
         {
             var avatar = userPayload.Avatar;
 
-            var avatarData = await _imageUploadService.Upload(avatar);
+            var avatarUrl = String.Empty;
 
-            var avatarUrl = avatarData;
+            if (avatar == null) avatarUrl = userPayload.UserName.Substring(0, 1);
+            else
+            {
+                var avatarData = await _imageUploadService.Upload(avatar);
+                avatarUrl = avatarData;
+            }
 
             if (avatarUrl == null) return BadRequest("Couldnt upload the avatar.");
 
@@ -136,18 +141,31 @@ namespace Server.Controller.src.Controller
 
             var avatar = userPayload.Avatar;
 
-            var avatarUrl = avatar != null ? await _imageUploadService.Upload(avatar) : $"{userPayload.UserName}.png";
+            Console.WriteLine("ABCD" + avatar);
 
-            if (avatarUrl == null) return BadRequest("Couldnt upload the avatar.");
-
-            var user = new UserUpdateDto
+            if (avatar != null)
             {
-                UserName = userPayload.UserName,
-                Avatar = avatarUrl,
-            };
+                Console.WriteLine("PQRS" + avatar);
+                var avatarUrl = await _imageUploadService.Upload(avatar);
+                var user = new UserUpdateDto
+                {
+                    UserName = userPayload.UserName,
+                    Avatar = avatarUrl,
+                };
+                var updatedUser = await _userService.UpdateUserByIdAsync(id, user);
+                return Ok(updatedUser);
+            }
+            else
+            {
+                Console.WriteLine("XYZ" + avatar);
+                var user = new UserUpdateDto
+                {
+                    UserName = userPayload.UserName,
+                };
+                var updatedUser = await _userService.UpdateUserByIdAsync(id, user);
+                return Ok(updatedUser);
+            }
 
-            var updatedUser = await _userService.UpdateUserByIdAsync(id, user);
-            return Ok(updatedUser);
         }
 
 

@@ -75,19 +75,19 @@ public class OrderController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPatch("{id}")]
-    public async Task<ActionResult<bool>> UpdateOrderByIdAsync([FromRoute] Guid id, [FromBody] UpdateOrderDTO updateOrderDTO)
+    public async Task<ActionResult<ReadOrderDTO>> UpdateOrderByIdAsync([FromRoute] Guid id, [FromBody] UpdateOrderDTO updateOrderDTO)
     {
-        var isUpdated = await _orderService.UpdateOrderByIdAsync(id, updateOrderDTO);
-        if (!isUpdated) return NotFound("Order couldnot be found");
-        return Ok("Order successfully updated");
+        var order = await _orderService.UpdateOrderByIdAsync(id, updateOrderDTO);
+        if (order is null) return NotFound("Order couldnot be found");
+        return Ok(order);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> DeleteOrderByIdAsync([FromRoute] Guid id)
     {
-        var isDeleted = await _orderService.DeleteOrderByIdAsync(id);
-        if (!isDeleted) return NotFound("Order couldnot be found");
-        return Ok("Order successfully deleted");
+        var deletedOrder = await _orderService.DeleteOrderByIdAsync(id);
+        if (deletedOrder is null) return NotFound("Order couldnot be found");
+        return Ok(deletedOrder);
     }
 }

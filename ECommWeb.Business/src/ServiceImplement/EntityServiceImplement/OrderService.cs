@@ -69,7 +69,7 @@ public class OrderService : IOrderService
         return _mapper.Map<ReadOrderDTO>(createdOrder);
     }
 
-    public async Task<bool> UpdateOrderByIdAsync(Guid orderId, UpdateOrderDTO newOrder)
+    public async Task<ReadOrderDTO> UpdateOrderByIdAsync(Guid orderId, UpdateOrderDTO newOrder)
     {
         if (orderId == Guid.Empty) throw new ValidationException("Order id cannot be empty");
 
@@ -80,20 +80,20 @@ public class OrderService : IOrderService
         oldOrder.Status = newOrder.Status;
         oldOrder.DateOfDelivery = DateTime.Parse(newOrder.DateOfDelivery);
 
-        var isUpdated = await _orderRepository.UpdateOrderByIdAsync(oldOrder);
+        var updatedOrder = await _orderRepository.UpdateOrderByIdAsync(oldOrder);
 
-        if (!isUpdated) throw new OperationFailedException("Could not update the order");
+        if (updatedOrder is null) throw new OperationFailedException("Could not update the order");
 
-        return isUpdated;
+        return _mapper.Map<ReadOrderDTO>(updatedOrder);
     }
-    public async Task<bool> DeleteOrderByIdAsync(Guid orderId)
+    public async Task<ReadOrderDTO> DeleteOrderByIdAsync(Guid orderId)
     {
         if (orderId == Guid.Empty) throw new ValidationException("Order id cannot be empty");
 
-        var isDeleted = await _orderRepository.DeleteOrderByIdAsync(orderId);
+        var orderToBeDeleted = await _orderRepository.DeleteOrderByIdAsync(orderId);
 
-        if (!isDeleted) throw new OperationFailedException("Could not delete the order");
+        if (orderToBeDeleted is null) throw new OperationFailedException("Could not delete the order");
 
-        return isDeleted;
+        return _mapper.Map<ReadOrderDTO>(orderToBeDeleted);
     }
 }

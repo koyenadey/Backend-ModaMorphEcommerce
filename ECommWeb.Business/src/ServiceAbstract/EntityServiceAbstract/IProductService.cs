@@ -6,7 +6,7 @@ namespace ECommWeb.Business.src.ServiceAbstract.EntityServiceAbstract;
 
 public interface IProductService
 {
-    Task<int> GetProductsCount();
+    Task<int> GetProductsCount(string SearchKey);
     Task<bool> CheckIfEmailExists(string email);
     Task<int> GetProductsCountByCategory(Guid categoryId);
     Task<IEnumerable<ProductReadDTO>> GetAllProductsAsync(QueryOptions options);

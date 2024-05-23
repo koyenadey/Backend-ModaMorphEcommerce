@@ -17,9 +17,16 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
         //_orderProducts = context.OrderedProducts;
     }
 
-    public async Task<int> GetProductsCount()
+    public async Task<int> GetProductsCount(string SearchKey)
     {
-        return await _context.Products.CountAsync();
+        if (string.IsNullOrWhiteSpace(SearchKey))
+        {
+            return await _context.Products.CountAsync();
+        }
+        return await _context.Products
+            .Where(p => p.Name.ToLower().Contains(SearchKey.ToLower())
+                || p.Description.ToLower().Contains(SearchKey.ToLower()))
+            .CountAsync();
     }
 
     public async Task<int> GetProductsCountByCategory(Guid categoryId)
@@ -30,23 +37,34 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
 
     public override async Task<IEnumerable<Product>> GetAllAsync(QueryOptions options)
     {
+        Console.WriteLine("Inside getall async");
         var pgNo = options.PageNo;
         var pgSize = options.PageSize;
-        var allData = _data.Include("Images").Include("Category").Skip((pgNo - 1) * pgSize).Take(pgSize);
-        //var allData = _data.Include("Images").Include("Category").Skip(options.PageNo).Take(options.PageSize);
+        var allData = _context.Products.AsQueryable().Include("Images").Include("Category");
 
+        if (!string.IsNullOrWhiteSpace(options.SearchKey))
+        {
+            var searchKeyLower = options.SearchKey.ToLower();
+
+            allData = allData.Where(p => p.Name.ToLower().Contains(searchKeyLower)
+                                      || p.Description.ToLower().Contains(searchKeyLower
+                                    ));
+
+        }
+        allData = allData.Skip((pgNo - 1) * pgSize).Take(pgSize);
         if (options.sortType == SortType.byTitle && options.sortOrder == SortOrder.asc)
         {
-            return allData.OrderBy(item => item.Name).ToArray();
+            return allData.OrderBy(item => item.Name);
         }
         if (options.sortType == SortType.byTitle && options.sortOrder == SortOrder.desc)
         {
-            return allData.OrderByDescending(item => item.Name).ToArray();
+            return allData.OrderByDescending(item => item.Name);
         }
         if (options.sortType == SortType.byPrice && options.sortOrder == SortOrder.asc)
         {
-            return allData.OrderBy(item => item.Price).ToArray();
+            return allData.OrderBy(item => item.Price);
         }
+
         return allData.OrderByDescending(item => item.Price).ToArray();
     }
 

@@ -67,16 +67,12 @@ public class OrderRepo : IOrderRepo
 
     }
 
-    public async Task<bool> DeleteOrderByIdAsync(Guid orderId)
+    public async Task<Order> DeleteOrderByIdAsync(Guid orderId)
     {
         Order order = await GetOrderByIdAsync(orderId);
-        if (order != null)
-        {
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        return false;
+        _context.Orders.Remove(order);
+        await _context.SaveChangesAsync();
+        return order;
     }
 
     public async Task<IEnumerable<Order>> GetAllOrdersAsync(QueryOptions options, Guid userId)
@@ -136,7 +132,7 @@ public class OrderRepo : IOrderRepo
                              .FirstAsync(o => o.Id == orderId);
     }
 
-    public async Task<bool> UpdateOrderByIdAsync(Order order)
+    public async Task<Order> UpdateOrderByIdAsync(Order order)
     {
         var orderFound = await GetOrderByIdAsync(order.Id);
         if (order != null && orderFound != null)
@@ -146,6 +142,6 @@ public class OrderRepo : IOrderRepo
         }
         await _context.SaveChangesAsync();
 
-        return true;
+        return order;
     }
 }

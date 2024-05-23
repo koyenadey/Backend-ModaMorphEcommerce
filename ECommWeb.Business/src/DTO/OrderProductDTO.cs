@@ -1,3 +1,5 @@
+using ECommWeb.Core.src.Entity;
+
 namespace ECommWeb.Business.src.DTO;
 
 public class OrderProductReadDTO

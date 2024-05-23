@@ -62,6 +62,13 @@ public class OrderProfile : Profile
                 opt => opt.MapFrom(src => src.PriceAtPurchase)
             );
 
+        CreateMap<ProductImage, ProductOrderImageReadDTO>()
+            .ForMember(
+                dest => dest.ImageUrl,
+                opt => opt.MapFrom(src => src.ProductImageUrl)
+            );
+
+
         //Profile for CreateOrderDto
         CreateMap<CreateOrderDTO, Order>()
             .ForMember(

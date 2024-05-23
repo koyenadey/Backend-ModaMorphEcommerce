@@ -8,6 +8,11 @@ public class ProductImageReadDTO : BaseEntity
     public string ImageUrl { get; set; }
 }
 
+public class ProductOrderImageReadDTO : BaseEntity
+{
+    public string ImageUrl { get; set; }
+}
+
 public class ProductImageCreateDTO
 {
     public string ImageUrl { get; set; }

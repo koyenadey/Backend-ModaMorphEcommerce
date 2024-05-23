@@ -21,9 +21,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("api/v1/products/meta")]
-    public async Task<ActionResult<int>> GetProductsCount()
+    public async Task<ActionResult<int>> GetProductsCount([FromQuery] QueryOptions options)
     {
-        var productCount = await _productServices.GetProductsCount();
+        var productCount = await _productServices.GetProductsCount(options.SearchKey);
 
         if (productCount == 0) return NotFound("Results could not be fetched");
 

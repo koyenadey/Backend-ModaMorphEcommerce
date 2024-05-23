@@ -9,6 +9,6 @@ public interface IOrderRepo
     public Task<IEnumerable<Order>> GetAllOrdersByUserAsync(QueryOptions options, Guid userId);
     public Task<Order> GetOrderByIdAsync(Guid orderId);
     public Task<Order> CreateOrderAsync(Order order);
-    public Task<bool> UpdateOrderByIdAsync(Order order);
-    public Task<bool> DeleteOrderByIdAsync(Guid orderId);
+    public Task<Order> UpdateOrderByIdAsync(Order order);
+    public Task<Order> DeleteOrderByIdAsync(Guid orderId);
 }

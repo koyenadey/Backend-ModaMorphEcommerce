@@ -23,6 +23,7 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductReadDTO>> GetAllProductsAsync(QueryOptions options)
     {
         var products = await _productRepo.GetAllAsync(options);
+        Console.WriteLine("after db call: " + products.Count());
         return _mapper.Map<IEnumerable<ProductReadDTO>>(products);
     }
 
@@ -40,9 +41,9 @@ public class ProductService : IProductService
     }
 
 
-    public async Task<int> GetProductsCount()
+    public async Task<int> GetProductsCount(string SearchKey)
     {
-        return await _productRepo.GetProductsCount();
+        return await _productRepo.GetProductsCount(SearchKey);
     }
 
     public Task<int> GetProductsCountByCategory(Guid categoryId)
