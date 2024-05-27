@@ -24,7 +24,9 @@ This is a backend application built using `C# EF Core` and `ASP.Net Core 8`. It 
 This application presents all the REST API endpoints for CRUD operations related to E-Commerce Website. The link of the website are
 
 - [shop-modamorph](https://shop-modamorph.netlify.app/)
+- Please find the public [repository link](https://github.com/koyenadey/ECommWebUI) for the UI codebase.
 - [shop-modamorph API](https://modamorph.azurewebsites.net/swagger/index.html)
+- Please find the public [repository link](https://github.com/koyenadey/ECommWebApi) for the API codebase.
   ![SwaggerInterface](Swagger.png)
 
 Currently it supports CRUD operations for the below entities -
