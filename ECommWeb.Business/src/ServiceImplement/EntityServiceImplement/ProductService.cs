@@ -23,7 +23,6 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductReadDTO>> GetAllProductsAsync(QueryOptions options)
     {
         var products = await _productRepo.GetAllAsync(options);
-        Console.WriteLine("after db call: " + products.Count());
         return _mapper.Map<IEnumerable<ProductReadDTO>>(products);
     }
 
@@ -46,11 +45,11 @@ public class ProductService : IProductService
         return await _productRepo.GetProductsCount(SearchKey);
     }
 
-    public Task<int> GetProductsCountByCategory(Guid categoryId)
+    public Task<int> GetProductsCountByCategory(Guid categoryId, string SearchKey)
     {
         if (categoryId != Guid.Empty)
         {
-            return _productRepo.GetProductsCountByCategory(categoryId);
+            return _productRepo.GetProductsCountByCategory(categoryId, SearchKey);
         }
         else throw new ValidationException("Category Id is empty");
     }

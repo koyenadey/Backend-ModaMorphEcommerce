@@ -141,11 +141,8 @@ namespace Server.Controller.src.Controller
 
             var avatar = userPayload.Avatar;
 
-            Console.WriteLine("ABCD" + avatar);
-
             if (avatar != null)
             {
-                Console.WriteLine("PQRS" + avatar);
                 var avatarUrl = await _imageUploadService.Upload(avatar);
                 var user = new UserUpdateDto
                 {
@@ -157,7 +154,6 @@ namespace Server.Controller.src.Controller
             }
             else
             {
-                Console.WriteLine("XYZ" + avatar);
                 var user = new UserUpdateDto
                 {
                     UserName = userPayload.UserName,

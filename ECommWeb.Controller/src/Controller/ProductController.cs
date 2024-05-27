@@ -31,9 +31,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("api/v1/products/category/{id}/meta")]
-    public async Task<ActionResult<int>> GetProductsCountByCategory([FromRoute] Guid id)
+    public async Task<ActionResult<int>> GetProductsCountByCategory([FromRoute] Guid id, [FromQuery] QueryOptions options)
     {
-        var result = await _productServices.GetProductsCountByCategory(id);
+        var result = await _productServices.GetProductsCountByCategory(id, options.SearchKey);
         if (result != 0) return Ok(result);
         return NotFound("Results could not be fetched");
     }

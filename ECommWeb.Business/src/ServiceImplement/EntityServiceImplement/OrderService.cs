@@ -62,7 +62,6 @@ public class OrderService : IOrderService
 
         var createdOrder = await _orderRepository.CreateOrderAsync(order);
 
-        Console.WriteLine($"Created order with order id {createdOrder.Id} and Address Details: {createdOrder.Address.Id} Address Id {createdOrder.AddressId}");
 
         if (createdOrder == null) throw new OperationFailedException("Failed to create order.");
 

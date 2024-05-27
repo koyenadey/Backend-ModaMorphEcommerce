@@ -8,7 +8,7 @@ public interface IProductService
 {
     Task<int> GetProductsCount(string SearchKey);
     Task<bool> CheckIfEmailExists(string email);
-    Task<int> GetProductsCountByCategory(Guid categoryId);
+    Task<int> GetProductsCountByCategory(Guid categoryId, string SearchKey);
     Task<IEnumerable<ProductReadDTO>> GetAllProductsAsync(QueryOptions options);
     Task<ProductReadDTO> GetProductById(Guid id);
     Task<ProductReadDTO> CreateProduct(ProductCreateDTO prod);

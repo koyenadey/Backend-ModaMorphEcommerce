@@ -55,8 +55,6 @@ public class AddressService : IAddressService
 
         var addresses = await _addressRepo.GetAddressesByUserAsync(userId, options);
 
-        Console.WriteLine($"Address retrieved from service : UserName: {addresses.ToList()[0].User.UserName} Email: {addresses.ToList()[0].User.Email} Street: {addresses.ToList()[0].Street}");
-
         return _mapper.Map<IEnumerable<AddressReadDto>>(addresses);
     }
 

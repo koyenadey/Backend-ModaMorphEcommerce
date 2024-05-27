@@ -64,7 +64,7 @@ public class OrderController : ControllerBase
     public async Task<ActionResult<ReadOrderDTO>> CreateOrderAsync([FromBody] CreateOrderDTO orderDto)
     {
         var order = await _orderService.CreateOrderAsync(orderDto);
-        Console.WriteLine($"Order received {order.OrderId} with address {order.Address.Id}");
+
         if (order == null) return BadRequest("Order couldnot be created");
         var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
         var userEmail = userClaims;
