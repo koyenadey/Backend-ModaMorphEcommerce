@@ -61,7 +61,6 @@ public class OrderRepo : IOrderRepo
                 await transaction.RollbackAsync();
                 throw;
             }
-            Console.WriteLine($"Order with order id {order.Id} is added in the address {order.AddressId}");
             return order;
         }
 

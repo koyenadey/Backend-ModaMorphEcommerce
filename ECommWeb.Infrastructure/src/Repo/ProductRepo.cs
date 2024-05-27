@@ -29,15 +29,22 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
             .CountAsync();
     }
 
-    public async Task<int> GetProductsCountByCategory(Guid categoryId)
+    public async Task<int> GetProductsCountByCategory(Guid categoryId, string SearchKey)
     {
-        return await _context.Products.Where(p => p.CategoryId == categoryId).CountAsync();
+        if (string.IsNullOrWhiteSpace(SearchKey))
+        {
+            return await _context.Products.Where(p => p.CategoryId == categoryId).CountAsync();
+        }
+        return await _context.Products
+            .Where(p => p.CategoryId == categoryId)
+            .Where(p => p.Name.ToLower().Contains(SearchKey.ToLower())
+                || p.Description.ToLower().Contains(SearchKey.ToLower()))
+            .CountAsync();
 
     }
 
     public override async Task<IEnumerable<Product>> GetAllAsync(QueryOptions options)
     {
-        Console.WriteLine("Inside getall async");
         var pgNo = options.PageNo;
         var pgSize = options.PageSize;
         var allData = _context.Products.AsQueryable().Include("Images").Include("Category");
@@ -76,13 +83,34 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
 
     public IEnumerable<Product> GetByCategory(Guid categoryId, QueryOptions options)
     {
-        var pageNo = options.PageNo;
-        var pageSize = options.PageSize;
+        var pgNo = options.PageNo;
+        var pgSize = options.PageSize;
+        var allData = _context.Products.AsQueryable().Include("Images").Include("Category")
+                            .Where(product => product.CategoryId == categoryId);
 
-        return _data.Include("Images").Include("Category")
-                    .Where(product => product.CategoryId == categoryId)
-                    .Skip((1 - pageNo) * pageSize)
-                    .Take(pageSize);
+        if (!string.IsNullOrWhiteSpace(options.SearchKey))
+        {
+            var searchKeyLower = options.SearchKey.ToLower();
+
+            allData = allData.Where(p => p.Name.ToLower().Contains(searchKeyLower)
+                                      || p.Description.ToLower().Contains(searchKeyLower
+                                    ));
+
+        }
+        allData = allData.Skip((pgNo - 1) * pgSize).Take(pgSize);
+        if (options.sortType == SortType.byTitle && options.sortOrder == SortOrder.asc)
+        {
+            return allData.OrderBy(item => item.Name);
+        }
+        if (options.sortType == SortType.byTitle && options.sortOrder == SortOrder.desc)
+        {
+            return allData.OrderByDescending(item => item.Name);
+        }
+        if (options.sortType == SortType.byPrice && options.sortOrder == SortOrder.asc)
+        {
+            return allData.OrderBy(item => item.Price);
+        }
+        return allData.OrderByDescending(item => item.Price).ToArray();
     }
 
     public override async Task<Product> CreateOneAsync(Product product)

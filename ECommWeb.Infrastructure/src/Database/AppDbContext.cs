@@ -52,7 +52,7 @@ public class AppDbContext : DbContext
             entity.HasMany(u => u.Orders)
                   .WithOne(o => o.User)
                   .HasForeignKey(o => o.UserId);
-            entity.HasData(SeedingData.GetUsers());
+            //entity.HasData(SeedingData.GetUsers());
         });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Address>(entity =>
@@ -60,18 +60,18 @@ public class AppDbContext : DbContext
             entity.HasOne(a => a.User)
                   .WithMany(u => u.Addresses)
                   .HasForeignKey(a => a.UserId);
-            entity.HasData(SeedingData.GetAddresses());
+            //entity.HasData(SeedingData.GetAddresses());
         });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Category>(e =>
             {
-                e.HasData(SeedingData.GetCategories());
+                //e.HasData(SeedingData.GetCategories());
                 e.HasIndex(e => e.Name).IsUnique();
             });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Product>(e =>
         {
-            e.HasData(SeedingData.Products);
+            //e.HasData(SeedingData.Products);
             e.HasIndex(p => p.Name).IsUnique();
             e.HasMany(p => p.Images) // Product has many ProductImage
             .WithOne()              // ProductImage bonds to one Product
@@ -84,7 +84,7 @@ public class AppDbContext : DbContext
             .WithMany(p => p.Images) // Product has many ProductImages
             .HasForeignKey(pi => pi.ProductId) // Set the foreign key
             .IsRequired(); // Ensure that the relationship is required (optional)
-            e.HasData(SeedingData.GetProductImages()); // Seed the product images
+            //e.HasData(SeedingData.GetProductImages()); // Seed the product images
         });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Order>(e =>
