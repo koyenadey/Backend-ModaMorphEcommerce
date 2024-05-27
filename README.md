@@ -28,6 +28,7 @@ This application presents all the REST API endpoints for CRUD operations related
 - [shop-modamorph API](https://modamorph.azurewebsites.net/swagger/index.html)
 - Please find the public [repository link](https://github.com/koyenadey/ECommWebApi) for the API codebase.
   ![SwaggerInterface](Swagger.png)
+- The backend is also powered by email service. Please note for the sake of demo we are using ethereal. For testing you can login using username **janelle.quitzon90@ethereal.email** and password **ykH1qc7QFaRCNj3z1f** to check the both inbound and outbound mails.
 
 Currently it supports CRUD operations for the below entities -
 
@@ -272,9 +273,9 @@ We welcome contributions from the community to help improve our project. Whether
 If you'd like to contribute code to the project, you can submit pull requests with your changes. Here's how you can do it:
 
 1. Fork the repository and create a new branch for your feature or bug fix.
-2. Make your changes and commit them to your branch. Please follow our [coding style guidelines](link_to_coding_style_guidelines) and ensure that your code is well-tested.
+2. Make your changes and commit them to your branch. Please ensure that your code is well-tested.
 3. Push your branch to your forked repository on GitHub.
-4. [Create a pull request](link_to_create_pull_request) against the `main` branch of our repository, explaining the purpose of your changes and referencing any related issues.
+4. Create a pull request against the `main` branch of our repository, explaining the purpose of your changes and referencing any related issues.
 
 Our team will review your pull request and provide feedback. Once your changes are approved, we'll merge them into the project.
 
