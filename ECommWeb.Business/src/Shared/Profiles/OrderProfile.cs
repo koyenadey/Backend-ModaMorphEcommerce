@@ -14,7 +14,7 @@ public class OrderProfile : Profile
         //Profile for ReadOrderDto
         CreateMap<Order, ReadOrderDTO>()
             .ForMember(
-                dest => dest.OrderId,
+                dest => dest.Id,
                 opt => opt.MapFrom(src => src.Id)
             )
             .ForMember(
@@ -26,8 +26,8 @@ public class OrderProfile : Profile
                 opt => opt.MapFrom(src => src.Status)
             )
             .ForMember(
-                dest => dest.UserName,
-                opt => opt.MapFrom(src => src.User.UserName)
+                dest => dest.User,
+                opt => opt.MapFrom(src => src.User)
             )
             .ForMember(
                 dest => dest.DateOfDelivery,
@@ -43,15 +43,20 @@ public class OrderProfile : Profile
             );
 
         CreateMap<Address, AddressReadDto>();
+        CreateMap<User, UserReadDto>();
 
         CreateMap<OrderProduct, OrderProductReadDTO>()
+        .ForMember(
+                dest => dest.Id,
+                opt => opt.MapFrom(src => src.Id)
+            )
             .ForMember(
                 dest => dest.ProductId,
                 opt => opt.MapFrom(src => src.ProductId)
             )
             .ForMember(
-                dest => dest.ProductName,
-                opt => opt.MapFrom(src => src.Product.Name)
+                dest => dest.Product,
+                opt => opt.MapFrom(src => src.Product)
             )
             .ForMember(
                 dest => dest.Quantity,
@@ -62,11 +67,7 @@ public class OrderProfile : Profile
                 opt => opt.MapFrom(src => src.PriceAtPurchase)
             );
 
-        CreateMap<ProductImage, ProductOrderImageReadDTO>()
-            .ForMember(
-                dest => dest.ImageUrl,
-                opt => opt.MapFrom(src => src.ProductImageUrl)
-            );
+        CreateMap<Product, ProductReadDTO>();
 
 
         //Profile for CreateOrderDto
@@ -93,10 +94,6 @@ public class OrderProfile : Profile
             );
 
         CreateMap<OrderProductCreateDTO, OrderProduct>()
-            .ForMember(
-                dest => dest.OrderId,
-                opt => opt.MapFrom(src => Guid.NewGuid())
-            )
             .ForMember(
                 dest => dest.ProductId,
                 opt => opt.MapFrom(src => src.ProductId)

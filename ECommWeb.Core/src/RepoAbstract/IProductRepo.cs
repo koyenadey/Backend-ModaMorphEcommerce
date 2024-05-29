@@ -5,8 +5,8 @@ namespace ECommWeb.Core.src.RepoAbstract;
 
 public interface IProductRepo : IBaseRepo<Product>
 {
-    Task<int> GetProductsCount(string SearchKey);
-    Task<int> GetProductsCountByCategory(Guid categoryId, string SearchKey);
+    public Task<int> GetProductsCount(string SearchKey);
+    public Task<int> GetProductsCountByCategory(Guid categoryId, string SearchKey);
     IEnumerable<Product> GetByCategory(Guid categoryId, QueryOptions options);
-    IEnumerable<Product> GetMostPurchased(int topNumber);
+    public Task<IEnumerable<Product>> GetMostPurchased(int topNumber);
 }

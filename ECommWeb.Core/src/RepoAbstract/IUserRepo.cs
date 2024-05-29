@@ -10,7 +10,7 @@ public interface IUserRepo
     Task<IEnumerable<User>> GetAllUsersAsync(QueryOptions options);
     Task<User> UpdateUserByIdAsync(User user);
     Task<bool> DeleteUserByIdAsync(Guid id);
-    Task<User> CreateUserAsync(User user, Address address);
+    Task<User> CreateUserAsync(User user, Address address, Wishlist wishlist);
     Task<bool> ChangePasswordAsync(Guid userId, string newPassword, byte[] salt);
     Task<bool> CheckEmailAsync(string email);
     Task<User> GetUserByCredentialsAsync(UserCredential userCredential);

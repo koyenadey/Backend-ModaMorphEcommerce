@@ -5,7 +5,7 @@ namespace ECommWeb.Business.src.DTO;
 public class ProductImageReadDTO : BaseEntity
 {
     public Guid ProductId { get; set; }
-    public string ImageUrl { get; set; }
+    public string ProductImageUrl { get; set; }
 }
 
 public class ProductOrderImageReadDTO : BaseEntity

@@ -34,7 +34,12 @@ public class UserService : IUserService
         userToAdd.Salt = salt;
         userToAdd.Role = Role.Admin;
         var adminAddress = _mapper.Map<Address>(GetAddress(user, userToAdd.Id));
-        var addedUser = await _userRepo.CreateUserAsync(userToAdd, adminAddress);
+        var defaultWishList = new Wishlist
+        {
+            Name = "Default",
+            UserId = userToAdd.Id,
+        };
+        var addedUser = await _userRepo.CreateUserAsync(userToAdd, adminAddress, defaultWishList);
         return _mapper.Map<UserReadDto>(addedUser);
     }
 
@@ -56,7 +61,13 @@ public class UserService : IUserService
 
         userToAdd.DefaultAddressId = userAddress.Id;
 
-        var addedUser = await _userRepo.CreateUserAsync(userToAdd, userAddress);
+        var defaultWishList = new Wishlist
+        {
+            Name = "Default",
+            UserId = userToAdd.Id,
+        };
+
+        var addedUser = await _userRepo.CreateUserAsync(userToAdd, userAddress, defaultWishList);
 
         return _mapper.Map<UserReadDto>(addedUser);
 

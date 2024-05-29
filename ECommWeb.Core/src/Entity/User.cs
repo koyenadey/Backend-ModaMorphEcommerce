@@ -23,6 +23,8 @@ namespace ECommWeb.Core.src.Entity
         public byte[] Salt { get; set; } // random key to hash password
         public IEnumerable<Address> Addresses { get; set; }
         public IEnumerable<Order> Orders { get; set; }
+        public IEnumerable<Review> Reviews { get; set; }
+        public IEnumerable<Wishlist> Wishlists { get; set; }
 
     }
 

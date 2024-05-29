@@ -52,6 +52,12 @@ public class OrderRepo : IOrderRepo
                 var addedOrder = await _context.Orders
                                                 .Include(o => o.Address)
                                                 .Include(o => o.User)
+                                                .Include(o => o.OrderedProducts)
+                                                    .ThenInclude(op => op.Product)
+                                                        .ThenInclude(p => p.Images)
+                                                .Include(op => op.OrderedProducts)
+                                                    .ThenInclude(op => op.Product)
+                                                        .ThenInclude(p => p.Category)
                                                 .FirstOrDefaultAsync(o => o.Id == order.Id);
 
                 await transaction.CommitAsync();
@@ -93,6 +99,10 @@ public class OrderRepo : IOrderRepo
                             .Include(o => o.Address)
                             .Include(o => o.OrderedProducts)
                                 .ThenInclude(op => op.Product)
+                                    .ThenInclude(p => p.Images)
+                            .Include(op => op.OrderedProducts)
+                                .ThenInclude(op => op.Product)
+                                    .ThenInclude(p => p.Category)
                             .Skip((pgNo - 1) * pgSize)
                             .Take(pgSize);
 
@@ -103,9 +113,13 @@ public class OrderRepo : IOrderRepo
             var orders = _context.Orders.Where(o => o.UserId == userId)
                                     .OrderByDescending(o => o.OrderDate)
                                     .Include(o => o.User)
-                                        .Include(o => o.Address)
-                                        .Include(o => o.OrderedProducts)
-                                            .ThenInclude(op => op.Product)
+                                    .Include(o => o.Address)
+                                    .Include(o => o.OrderedProducts)
+                                        .ThenInclude(op => op.Product)
+                                            .ThenInclude(p => p.Images)
+                                    .Include(op => op.OrderedProducts)
+                                        .ThenInclude(op => op.Product)
+                                            .ThenInclude(p => p.Category)
                                     .Skip((pgNo - 1) * pgSize)
                                     .Take(pgSize);
 
@@ -128,6 +142,10 @@ public class OrderRepo : IOrderRepo
                              .Include(o => o.User)
                              .Include(o => o.OrderedProducts)
                                 .ThenInclude(op => op.Product)
+                                    .ThenInclude(p => p.Images)
+                             .Include(o => o.OrderedProducts)
+                                .ThenInclude(op => op.Product)
+                                    .ThenInclude(p => p.Category)
                              .FirstAsync(o => o.Id == orderId);
     }
 

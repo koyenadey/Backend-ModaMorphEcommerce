@@ -57,12 +57,23 @@ public class ProductProfile : Profile
                             i => new ProductImageReadDTO
                             {
                                 ProductId = i.ProductId,
-                                ImageUrl = i.ProductImageUrl
+                                ProductImageUrl = i.ProductImageUrl
                             }
                         )
                     )
                 )
                 .ReverseMap();
+
+        CreateMap<ProductImage, ProductImageReadDTO>()
+            .ForMember(
+                dest => dest.ProductId,
+                opt => opt.MapFrom(src => src.ProductId)
+            )
+            .ForMember(
+                dest => dest.ProductImageUrl,
+                opt => opt.MapFrom(src => src.ProductImageUrl)
+            )
+            .ReverseMap();
 
 
         //Profile for ProductCreateDto

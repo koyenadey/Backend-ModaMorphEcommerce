@@ -38,7 +38,7 @@ public class UserRepo : IUserRepo
         return true;
     }
 
-    public async Task<User> CreateUserAsync(User user, Address address)
+    public async Task<User> CreateUserAsync(User user, Address address, Wishlist wishlist)
     {
         using (var transaction = await _context.Database.BeginTransactionAsync())
         {
@@ -46,6 +46,7 @@ public class UserRepo : IUserRepo
             {
                 await _context.Users.AddAsync(user);
                 await _context.Addresses.AddAsync(address);
+                await _context.Wishlists.AddAsync(wishlist);
                 await _context.SaveChangesAsync();
 
 

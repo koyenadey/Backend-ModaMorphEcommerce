@@ -69,7 +69,7 @@ public class OrderController : ControllerBase
         var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
         var userEmail = userClaims;
         if (userEmail != null)
-            _emailService.SendEmail(userEmail, $"Order {order.OrderId} is {Status.processing}", "The order has been placeed successfully");
+            _emailService.SendEmail(userEmail, $"Order {order.Id} is {Status.processing}", "The order has been placeed successfully");
         return Ok(order);
     }
 

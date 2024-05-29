@@ -6,10 +6,10 @@ namespace ECommWeb.Business.src.DTO;
 
 public class ReadOrderDTO
 {
-    public Guid OrderId { get; set; }
+    public Guid Id { get; set; }
     public DateTime OrderDate { get; set; }
     public Status Status { get; set; }
-    public string UserName { get; set; }
+    public UserReadDto User { get; set; }
     public DateTime? DateOfDelivery { get; set; }
     public AddressReadDto Address { get; set; }
     public IEnumerable<OrderProductReadDTO> OrderedProducts { get; set; }

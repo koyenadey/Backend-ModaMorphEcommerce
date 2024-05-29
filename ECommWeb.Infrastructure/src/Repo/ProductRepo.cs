@@ -5,7 +5,6 @@ using ECommWeb.Core.src.RepoAbstract;
 using ECommWeb.Core.src.ValueObject;
 using ECommWeb.Infrastructure.src.Database;
 using ECommWeb.Infrastructure.src.Repo;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ECommWeb.Infrastructure.src.Repo;
 
@@ -165,25 +164,24 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
             throw;
         }
     }
-    public IEnumerable<Product> GetMostPurchased(int topNumber)
+    public async Task<IEnumerable<Product>> GetMostPurchased(int topNumber)
     {
-        // var mostPurchasedProducts = _orderProducts
-        //         .GroupBy(orderProduct => orderProduct.Product.Id)
-        //         .Select(group => new
-        //         {
-        //             ProductId = group.Key,
-        //             TotalQuantity = group.Sum(item => item.Quantity)
-        //         })
-        //         .OrderByDescending(item => item.TotalQuantity)
-        //         .Take(topNumber)
-        //         .Join(_data.Include("Images").Include("Category"),
-        //             orderItem => orderItem.ProductId,
-        //             product => product.Id,
-        //             (orderItem, product) => product)
-        //         .ToArray();
+        var mostPurchasedProducts = await _context.OrderedProducts
+                                    .GroupBy(op => op.ProductId)
+                                    .OrderByDescending(g => g.Count())
+                                    .Select(g => g.Key)
+                                    .Take(topNumber)
+                                    .ToListAsync();
 
-        // return mostPurchasedProducts;
-        return null;
+        Console.WriteLine("Most purchased: " + mostPurchasedProducts.Count());
+
+        var products = await _context.Products
+                        .Where(p => mostPurchasedProducts.Contains(p.Id))
+                        .ToListAsync();
+
+        Console.WriteLine("Most purchased Prdouct: " + products[0].Name);
+
+        return products;
     }
 
     public override async Task<Product> DeleteOneByIdAsync(Product product)
@@ -195,4 +193,5 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
         return product;
 
     }
+
 }
