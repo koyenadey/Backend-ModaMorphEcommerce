@@ -67,9 +67,9 @@ public class ProductController : ControllerBase
 
 
     [HttpGet("api/v1/products/top/{topNumber:int}")]
-    public async Task<IEnumerable<ProductReadDTO>> GetMostPurchased([FromRoute] int top)
+    public async Task<IEnumerable<ProductReadDTO>> GetMostPurchased([FromRoute] int topNumber)
     {
-        return await _productServices.GetMostPurchasedProductsAsync(top);
+        return await _productServices.GetMostPurchasedProductsAsync(topNumber);
     }
 
     [Authorize(Roles = "Admin")]

@@ -69,14 +69,14 @@ public class AddressService : IAddressService
         return _mapper.Map<AddressReadDto>(defaultAddress);
     }
 
-    public async Task<bool> SetDefaultAddressAsync(Guid userId, Guid addressId)
+    public async Task<AddressReadDto> SetDefaultAddressAsync(Guid userId, Guid addressId)
     {
-        var isSet = await _addressRepo.SetDefaultAddressAsync(userId, addressId);
-        if (!isSet)
+        var defaultAddress = await _addressRepo.SetDefaultAddressAsync(userId, addressId);
+        if (defaultAddress is null)
         {
             throw new InvalidOperationException("Setting default address failed. Please try again later.");
         }
-        return isSet;
+        return _mapper.Map<AddressReadDto>(defaultAddress);
     }
 
     public async Task<AddressReadDto> UpdateAddressByIdAsync(Guid addressId, AddressUpdateDto addressDto)

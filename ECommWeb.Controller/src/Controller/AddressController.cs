@@ -122,7 +122,7 @@ public class AddressController : ControllerBase
 
     [Authorize]
     [HttpPatch("{id}/setdefault")]
-    public async Task<ActionResult<bool>> SetDefaultAddressAsync([FromRoute] Guid id)
+    public async Task<ActionResult<AddressReadDto>> SetDefaultAddressAsync([FromRoute] Guid id)
     {
         var userClaims = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userClaims == null) throw new InvalidOperationException("Please login to use this facility!");//unauthenticated

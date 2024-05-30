@@ -10,6 +10,6 @@ public interface IAddressRepo
     Task<Address> UpdateAddressByIdAsync(Address address);
     Task<Guid> DeleteAddressByIdAsync(Guid id);
     Task<Address> CreateAddressAsync(Address address);
-    Task<bool> SetDefaultAddressAsync(Guid userId, Guid addressId);
+    Task<Address> SetDefaultAddressAsync(Guid userId, Guid addressId);
     Task<Address> GetDefaultAddressAsync(Guid userId);
 }

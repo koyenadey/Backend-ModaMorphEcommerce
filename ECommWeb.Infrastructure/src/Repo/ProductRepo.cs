@@ -166,6 +166,7 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
     }
     public async Task<IEnumerable<Product>> GetMostPurchased(int topNumber)
     {
+
         var mostPurchasedProducts = await _context.OrderedProducts
                                     .GroupBy(op => op.ProductId)
                                     .OrderByDescending(g => g.Count())
@@ -173,13 +174,12 @@ public class ProductRepo : BaseRepo<Product>, IProductRepo
                                     .Take(topNumber)
                                     .ToListAsync();
 
-        Console.WriteLine("Most purchased: " + mostPurchasedProducts.Count());
 
         var products = await _context.Products
-                        .Where(p => mostPurchasedProducts.Contains(p.Id))
-                        .ToListAsync();
-
-        Console.WriteLine("Most purchased Prdouct: " + products[0].Name);
+                                .Where(p => mostPurchasedProducts.Contains(p.Id))
+                                .Include(p => p.Images)
+                                .Include(p => p.Category)
+                                .ToListAsync();
 
         return products;
     }

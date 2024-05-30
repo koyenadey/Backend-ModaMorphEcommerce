@@ -62,7 +62,7 @@ public class AddressRepo : IAddressRepo
             var defaultAddressId = user.DefaultAddressId;
             return await _context.Addresses
                                  .Include(a => a.User)
-                                 .FirstAsync(a => a.Id == defaultAddressId);
+                                 .FirstOrDefaultAsync(a => a.Id == defaultAddressId);
 
         }
         else
@@ -71,7 +71,7 @@ public class AddressRepo : IAddressRepo
         }
     }
 
-    public async Task<bool> SetDefaultAddressAsync(Guid userId, Guid addressId)
+    public async Task<Address> SetDefaultAddressAsync(Guid userId, Guid addressId)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -80,11 +80,11 @@ public class AddressRepo : IAddressRepo
             // Find the default address for the user
             user.DefaultAddressId = addressId;
             await _context.SaveChangesAsync();
-            return true;
+            return await _context.Addresses.Include(a => a.User).FirstAsync((a) => a.Id == addressId);
         }
         else
         {
-            return false;
+            return null;
         }
     }
 

@@ -79,8 +79,6 @@ public class ReviewService : IReviewService
 
         if (foundReview == null) throw new InvalidDataException("The review Id provided is incorrect");
 
-        Console.WriteLine("Updated Reviews: " + updateReviewsDTO.Comment);
-
         foundReview.Comment = updateReviewsDTO.Comment;
         foundReview.Rating = updateReviewsDTO.Rating;
 
