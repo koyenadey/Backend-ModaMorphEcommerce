@@ -60,7 +60,7 @@ public class AppDbContext : DbContext
             entity.HasMany(u => u.Reviews)
                   .WithOne(r => r.User)
                   .HasForeignKey(r => r.UserId);
-            entity.HasData(SeedingData.GetUsers());
+            //entity.HasData(SeedingData.GetUsers());
         });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Address>(entity =>
@@ -68,18 +68,18 @@ public class AppDbContext : DbContext
             entity.HasOne(a => a.User)
                   .WithMany(u => u.Addresses)
                   .HasForeignKey(a => a.UserId);
-            entity.HasData(SeedingData.GetAddresses());
+            //entity.HasData(SeedingData.GetAddresses());
         });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Category>(e =>
             {
-                e.HasData(SeedingData.GetCategories());
+                //e.HasData(SeedingData.GetCategories());
                 e.HasIndex(e => e.Name).IsUnique();
             });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Product>(e =>
         {
-            e.HasData(SeedingData.Products);
+            //e.HasData(SeedingData.Products);
 
             e.HasIndex(p => p.Name).IsUnique();
             e.HasMany(p => p.Images) // Product has many ProductImage
@@ -97,7 +97,7 @@ public class AppDbContext : DbContext
             .WithMany(p => p.Images) // Product has many ProductImages
             .HasForeignKey(pi => pi.ProductId) // Set the foreign key
             .IsRequired(); // Ensure that the relationship is required (optional)
-            e.HasData(SeedingData.GetProductImages()); // Seed the product images
+            //e.HasData(SeedingData.GetProductImages()); // Seed the product images
         });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<Order>(e =>
@@ -169,7 +169,7 @@ public class AppDbContext : DbContext
             entity.HasMany(wl => wl.WishlistItems)
                 .WithOne(wli => wli.Wishlist)
                 .HasForeignKey(wli => wli.WishlistId);
-            entity.HasData(SeedingData.Wishlists);
+            //entity.HasData(SeedingData.Wishlists);
         });
         // -----------------------------------------------------------------------------------------------
         modelBuilder.Entity<WishlistItem>(entity =>
@@ -181,7 +181,7 @@ public class AppDbContext : DbContext
             entity.HasOne(wli => wli.Wishlist)
                 .WithMany(wl => wl.WishlistItems)
                 .HasForeignKey(wli => wli.WishlistId);
-            entity.HasData(SeedingData.WishlistItems);
+            //entity.HasData(SeedingData.WishlistItems);
         });
 
 
